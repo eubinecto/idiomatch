@@ -3,9 +3,9 @@ this saves a Spacy's matcher for matching a fixed set of idioms.
 """
 from spacy import load
 import pickle
-from builders import IdiomMatcherBuilder
+from mip.builders import IdiomMatcherBuilder
+from mip.loaders import IdiomsLoader
 from config import NLP_MODEL, IDIOM_MATCHER_PKL_PATH, SLIDE_TSV_PATH
-from loaders import IdiomsLoader
 
 
 def main():

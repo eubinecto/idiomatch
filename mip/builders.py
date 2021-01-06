@@ -37,6 +37,9 @@ class IdiomMatcherBuilder:
         ]
 
     def build_tokenizer_patterns(self):
+        """
+        hard-coding tokenisation rules.
+        """
         # add cases for place holders
         for placeholder, case in self.POSS_HOLDER_CASES.items():
             self.nlp.tokenizer.add_special_case(placeholder, case)

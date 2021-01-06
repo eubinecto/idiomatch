@@ -3,8 +3,6 @@ import pickle
 from typing import Generator, cast
 from spacy.matcher import Matcher
 
-from mip.pipeline import MergeIdiomPipeline
-
 
 class Loader:
     def __init__(self, path: str):
