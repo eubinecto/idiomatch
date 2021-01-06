@@ -3,10 +3,10 @@ this is just so that I can always see the pattern matching rules inside idiom ma
 """
 
 import csv
-from mip.utils import load_idiom_matcher
 from config import DELIM, IDIOM_MATCHER_INFO_TSV_PATH
 import json
 import argparse
+from loaders import IdiomMatcherLoader
 
 
 def main():
@@ -16,7 +16,8 @@ def main():
     args = parser.parse_args()
     matcher_path = args.idiom_matcher_pkl_path
     # load idiom matcher from cache.
-    idiom_matcher = load_idiom_matcher(matcher_path)
+    idiom_matcher_loader = IdiomMatcherLoader(path=matcher_path)
+    idiom_matcher = idiom_matcher_loader.load()
     # how do I view the rules..?
     with open(IDIOM_MATCHER_INFO_TSV_PATH, 'w') as fh:
         tsv_writer = csv.writer(fh, delimiter=DELIM)

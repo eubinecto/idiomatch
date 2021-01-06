@@ -6,12 +6,13 @@ from typing import List, Generator
 from spacy import load, Language
 from spacy.matcher import Matcher
 import pickle
-from config import NLP_MODEL, IDIOM_MATCHER_PKL_PATH
-from utils import load_target_idioms
+from config import NLP_MODEL, IDIOM_MATCHER_PKL_PATH, SLIDE_TSV_PATH
 
 
 # I could amalgamate this into enum classes, I think.
 # placeholder's for possessive pronouns should not be tokenized
+from loaders import IdiomsLoader
+
 POSS_HOLDER_CASES = {
     "one's": [{"ORTH": "one's"}],
     "someone's": [{"ORTH": "someone's"}]
@@ -70,7 +71,8 @@ def main():
     global POSS_HOLDER_CASES, SPECIAL_IDIOM_CASES
     # this is the end goal
     # load idioms on to memory.
-    idioms = load_target_idioms()
+    idioms_loader = IdiomsLoader(path=SLIDE_TSV_PATH)
+    idioms = idioms_loader.load(target_only=True)
     nlp = load(NLP_MODEL)
     # add cases for place holders
     for placeholder, case in POSS_HOLDER_CASES.items():
