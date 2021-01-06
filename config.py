@@ -32,11 +32,10 @@ IDIOM_MATCHER_INFO_TSV_PATH = path.join(MATCHER_DIR, "idiom_matcher_info_{}.tsv"
 
 
 # pipeline data
+MIP_PKL_PATH = path.join(PIPELINE_DIR, "mip_{}.pkl".format(now_str))
 
 # spacy
 NLP_MODEL = "en_core_web_sm"
-
-
 
 # for tsv files
 DELIM = "\t"

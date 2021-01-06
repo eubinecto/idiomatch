@@ -1,3 +1,7 @@
+"""
+this saves a Spacy's matcher for matching a fixed set of idioms.
+"""
+
 from typing import List, Generator
 from spacy import load, Language
 from spacy.matcher import Matcher
@@ -6,6 +10,7 @@ from config import NLP_MODEL, IDIOM_MATCHER_PKL_PATH
 from utils import load_target_idioms
 
 
+# I could amalgamate this into enum classes, I think.
 # placeholder's for possessive pronouns should not be tokenized
 POSS_HOLDER_CASES = {
     "one's": [{"ORTH": "one's"}],

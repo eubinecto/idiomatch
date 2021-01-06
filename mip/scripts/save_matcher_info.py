@@ -1,3 +1,7 @@
+"""
+this is just so that I can always see the pattern matching rules inside idiom matcher.
+"""
+
 import csv
 from mip.utils import load_idiom_matcher
 from config import DELIM, IDIOM_MATCHER_INFO_TSV_PATH

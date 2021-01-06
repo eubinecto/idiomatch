@@ -124,7 +124,7 @@ def create_merge_idiom_component(nlp, name, idiom_matcher) -> MergeIdiomComponen
     return MergeIdiomComponent(idiom_matcher)
 
 
-class IdiomNLP:
+class MergeIdiomPipeline:
     def __init__(self, nlp: Language, idiom_matcher: Matcher):
         self.nlp = nlp
         self.idiom_matcher = idiom_matcher
