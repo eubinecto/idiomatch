@@ -6,7 +6,7 @@ import csv
 from config import DELIM, IDIOM_MATCHER_INFO_TSV_PATH
 import json
 import argparse
-from loaders import IdiomMatcherLoader
+from mip.loaders import IdiomMatcherLoader
 
 
 def main():

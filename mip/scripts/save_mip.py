@@ -2,8 +2,8 @@
 
 from spacy import load
 from config import NLP_MODEL, MIP_PKL_PATH
-from loaders import IdiomMatcherLoader
-from utils import MergeIdiomPipeline
+from mip.loaders import IdiomMatcherLoader
+from mip.pipeline import MergeIdiomPipeline
 import argparse
 import pickle
 

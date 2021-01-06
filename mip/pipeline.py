@@ -42,7 +42,7 @@ class MergeIdiomComponent:
             lemma_i = self.idiom_matcher.vocab.strings[i]
             for j, match_j in enumerate(matches):
                 lemma_j = self.idiom_matcher.vocab.strings[j]
-                if j != i:
+                if j != i:  # only if they are different
                     if lemma_j in lemma_i:
                         to_del.append(j)
         else:

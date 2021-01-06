@@ -3,7 +3,7 @@ import pickle
 from typing import Generator, cast
 from spacy.matcher import Matcher
 
-from utils import MergeIdiomPipeline
+from mip.pipeline import MergeIdiomPipeline
 
 
 class Loader:
@@ -81,15 +81,8 @@ class PklLoader(Loader):
 
 
 class IdiomMatcherLoader(PklLoader):
-
     def load(self) -> Matcher:
         # need a type cast
         matcher = super(IdiomMatcherLoader, self).load()
         # just to avoid warning in IDE
         return cast(Matcher, matcher)
-
-
-class MIPLoader(PklLoader):
-    def load(self) -> MergeIdiomPipeline:
-        mip = super(MIPLoader, self).load()
-        return cast(MergeIdiomPipeline, mip)
