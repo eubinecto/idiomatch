@@ -1,8 +1,6 @@
 import csv
-import pickle
-from typing import Generator, cast
-
-from spacy.matcher import Matcher
+import json
+from typing import Generator,  List
 
 
 class Loader:
@@ -90,15 +88,8 @@ class IdiomsLoader(Loader):
                 cls.is_hyphenated(idiom))
 
 
-class PklLoader(Loader):
-    def load(self) -> object:
-        with open(self.path, 'rb') as fh:
-            return pickle.loads(fh.read())
+class IdiomPatternsLoader(Loader):
 
-
-class IdiomMatcherLoader(PklLoader):
-    def load(self) -> Matcher:
-        # need a type cast
-        matcher = super(IdiomMatcherLoader, self).load()
-        # just to avoid warning in IDE
-        return cast(Matcher, matcher)
+    def load(self, *args, **kwargs) -> dict:
+        with open(self.path, 'r') as fh:
+            return json.loads(fh.read())

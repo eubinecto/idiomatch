@@ -1,14 +1,12 @@
 from typing import List, Optional
 from unittest import TestCase
-
+from builders import MIPBuilder
 from spacy import Language
 
-from mip.builders import MIPBuilder
-from config import IDIOM_MATCHER_PKL_CURR_PATH
 
+class TestMergeIdiomsPipeline(TestCase):
 
-class TestMergeIdiomPipeline(TestCase):
-
+    # to be used globally
     mip: Optional[Language] = None
 
     # utils.
@@ -26,9 +24,9 @@ class TestMergeIdiomPipeline(TestCase):
         https://stackoverflow.com/a/12202239
         """
         # prepare resource, before running any tests below
-        mip_builder = MIPBuilder()
         # I get some rsrc-related warning. Not sure why.
-        mip_builder.construct(IDIOM_MATCHER_PKL_CURR_PATH)
+        mip_builder = MIPBuilder()
+        mip_builder.construct()
         cls.mip = mip_builder.mip
 
     def test_on_ones_hands(self):
