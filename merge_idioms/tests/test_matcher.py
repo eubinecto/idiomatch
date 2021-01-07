@@ -24,13 +24,15 @@ class TestMergeIdiomsPipeline(TestCase):
         # prepare resource, before running any tests below
         # I get some rsrc-related warning. Not sure why.
         nlp = load(NLP_MODEL)
+        nlp.add_pipe("add_special_cases", before="tok2vec")
         idiom_matcher_builder = IdiomMatcherBuilder()
         idiom_matcher_builder.construct(nlp.vocab)
+        # set these as the global variables.
         cls.nlp = nlp
         cls.idiom_matcher = idiom_matcher_builder.idiom_matcher
 
     def test_match_catch_22(self):
-        sent_1 = "qualities attributed to the drug. It is a Catch-22 for any trainer or owner."
+        sent_1 = "qualities attributed to the drug. It is a catch-22 for any trainer or owner."
         # TODO: here, the problem is when - followed by a number.
         matches = self.idiom_matcher(self.nlp(sent_1))
         self.assertTrue(matches)

@@ -1,10 +1,10 @@
-import re
 from typing import Generator, List, Callable, Optional
 from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
 from config import SLIDE_TSV_PATH, NLP_MODEL, IDIOM_PATTERNS_JSON_PATH
 from loaders import IdiomsLoader, IdiomPatternsLoader
 import logging
+from hardcoded import POSS_HOLDERS
 from sys import stdout
 logging.basicConfig(stream=stdout, level=logging.INFO)  # why does logging not work?
 
@@ -23,15 +23,6 @@ class Builder:
 
 
 class IdiomPatternsBuilder(Builder):
-    # some cases
-    POSS_HOLDER_CASES = {
-        "one's": [{"ORTH": "one's"}],
-        "someone's": [{"ORTH": "someone's"}]
-    }
-    # some cases that must be hard-coded.
-    SPECIAL_IDIOM_CASES = {
-        "catch-22": [{"ORTH": "catch"}, {"ORTH": "-"}, {"ORTH": "22"}]
-    }
 
     def __init__(self):
         self.nlp: Optional[Language] = None
@@ -42,7 +33,7 @@ class IdiomPatternsBuilder(Builder):
     def steps(self) -> List[Callable]:
         return [
             self.prepare,
-            self.build_tokenizer_patterns,
+            self.add_component_to_pipe,
             self.build_idiom_patterns
         ]
 
@@ -52,33 +43,29 @@ class IdiomPatternsBuilder(Builder):
         self.idioms = idioms_loader.load(target_only=True)
         self.idiom_patterns = dict()
 
-    def build_tokenizer_patterns(self):
+    def add_component_to_pipe(self):
         """
-        hard-coding tokenisation rules.
+        the special cases.
         """
-        # add cases for place holders
-        for placeholder, case in self.POSS_HOLDER_CASES.items():
-            self.nlp.tokenizer.add_special_case(placeholder, case)
-        # add cases for words hyphenated with numbers
-        for idiom, case in self.SPECIAL_IDIOM_CASES.items():
-            self.nlp.tokenizer.add_special_case(idiom, case)
+        self.nlp.add_pipe("add_special_cases", before="tok2vec")
 
     def build_idiom_patterns(self):
         # then add idiom matches
         logger = logging.getLogger("build_idiom_patterns")
         for idiom in self.idioms:
+            idiom_norm = idiom.lower()
             # for each idiom, you want to build this.
             # as for building patterns, use uncased version. of the idiom.
             # if you just want to tokenize strings, use
             # nlp.tokenizer.pipe()
             # https://stackoverflow.com/a/59615431
             # I'm not using it here because I need to access lemmas
-            idiom_doc = self.nlp(idiom.lower())
+            idiom_doc = self.nlp(idiom_norm)
             if "-" in idiom:
                 # should include both hyphenated & non-hyphenated forms
                 # e.g. catch-22, catch 22
                 pattern = [
-                    {"TAG": "PRP$"} if token.text in self.POSS_HOLDER_CASES.keys()
+                    {"TAG": "PRP$"} if token.text in POSS_HOLDERS
                     # OP = ? - no occurrence or 1 occurrence
                     # https://spacy.io/usage/rule-based-matching#quantifiers
                     else {"ORTH": "-", "OP": "?"} if token.text == "-"
@@ -92,8 +79,10 @@ class IdiomPatternsBuilder(Builder):
                 patterns = [pattern]
             else:
                 pattern = [
-                    {"TAG": "PRP$"} if token.text in self.POSS_HOLDER_CASES.keys()
-                    else {"LEMMA": token.lemma_}  # if not a verb, we do exact-match
+                    {"TAG": "PRP$"} if token.text in POSS_HOLDERS
+                    # some people may not use comma
+                    else {"LEMMA": token.lemma_, "OP": "?"} if token.text == ","
+                    else {"LEMMA": token.lemma_}
                     for token in idiom_doc
                 ]
                 patterns = [pattern]
@@ -104,7 +93,7 @@ class IdiomPatternsBuilder(Builder):
                 {
                     # key = the str rep of idiom
                     # value = the patterns (list of list of dicts)
-                    idiom: patterns
+                    idiom_norm: patterns
                 }
             )
 
@@ -157,14 +146,12 @@ class MIPBuilder(Builder):
     def steps(self) -> List[Callable]:
         return [
             self.prepare,
-            self.add_merge_idioms_component
+            self.add_components
         ]
 
     def prepare(self, *args):
         self.mip = load(NLP_MODEL)
 
-    def add_merge_idioms_component(self):
-        """
-        the pipe must be added before.
-        """
+    def add_components(self):
+        self.mip.add_pipe("add_special_cases", before="tok2vec")
         self.mip.add_pipe("merge_idioms", after="lemmatizer")

@@ -4,15 +4,7 @@ from builders import IdiomMatcherBuilder
 from spacy import Language, Vocab
 from spacy.matcher import Matcher
 from spacy.tokens import Doc
-
-
-# factory method for the component
-@Language.factory(
-    name="merge_idioms",
-    retokenizes=True,  # we are merging, so it does retokenize
-)
-def create_component(nlp: Language, name: str) -> 'MergeIdiomsComponent':
-    return MergeIdiomsComponent(nlp.vocab, name)
+from hardcoded import SPECIAL_CASES
 
 
 class MergeIdiomsComponent:
@@ -45,6 +37,8 @@ class MergeIdiomsComponent:
                 retokeniser.merge(doc[start:end],
                                   # set tag as idiom
                                   # TODO: make sure you give it vocab_id.
+                                  # TODO: maybe give it a custom is_idiom attribute?
+                                  # how do you do this..?
                                   attrs={'LEMMA': idiom_lemma, 'TAG': 'IDIOM'})
                 # except ValueError as ve:
                 #     print("pass merging for:" + match_lemma)
@@ -88,3 +82,39 @@ class MergeIdiomsComponent:
                     for match in matches
                     if match
                 ]
+
+
+class AddSpecialCasesComponent:
+
+    def __init__(self, nlp: Language, name: str):
+        self.nlp = nlp
+        self.name = name
+
+    def __call__(self, doc: Doc) -> Doc:
+        # use lowercase version of the doc.
+        self.add_special_cases_to_tok()
+        # just pass the doc.
+        # all you want to do is adding the special cases
+        return doc
+
+    def add_special_cases_to_tok(self):
+        # add cases for place holders
+        for term, case in SPECIAL_CASES.items():
+            self.nlp.tokenizer.add_special_case(term, case)
+
+
+# factory method for the component
+@Language.factory(
+    name="merge_idioms",
+    retokenizes=True,  # we are merging, so it does retokenize
+)
+def create_merge_idiom_component(nlp: Language, name: str) -> MergeIdiomsComponent:
+    return MergeIdiomsComponent(nlp.vocab, name)
+
+
+@Language.factory(
+    name="add_special_cases",
+    retokenizes=False,
+)
+def create_add_special_cases_component(nlp: Language, name: str) -> AddSpecialCasesComponent:
+    return AddSpecialCasesComponent(nlp, name)
