@@ -34,7 +34,7 @@ class MergeIdiomsComponent:
     def __call__(self, doc: Doc) -> Doc:
         # use lowercase version of the doc.
         matches = self.idiom_matcher(doc)
-        matches = self.normalize(matches)
+        matches = self.greedily_normalize(matches)
         for vocab_id, start, end in matches:
             # get back the lemma for this match
             # note: matcher has references to the vocab on its own!
@@ -60,10 +60,9 @@ class MergeIdiomsComponent:
         return idiom_matcher_builder.idiom_matcher
 
     # need this to fix the duplicate issue.
-    def normalize(self, matches: List[Optional[tuple]]) -> List[tuple]:
+    def greedily_normalize(self, matches: List[Optional[tuple]]) -> List[tuple]:
         """
         have to do this to prevent the case like:
-        TODO: don't do this. make the pattern greedy instead.
         e.g.
         It's not the end of the world;
         -> will match both "end of the world" and "not the end of the world"

@@ -1,3 +1,4 @@
+import re
 from typing import Generator, List, Callable, Optional
 from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
@@ -74,25 +75,21 @@ class IdiomPatternsBuilder(Builder):
             # I'm not using it here because I need to access lemmas
             idiom_doc = self.nlp(idiom.lower())
             if "-" in idiom:
-                # TODO: could change this to regexp?
                 # should include both hyphenated & non-hyphenated forms
                 # e.g. catch-22, catch 22
-                pattern_hyphen = [
+                pattern = [
                     {"TAG": "PRP$"} if token.text in self.POSS_HOLDER_CASES.keys()
-                    else {"ORTH": token.text}  # don't use lemma
+                    # OP = ? - no occurrence or 1 occurrence
+                    # https://spacy.io/usage/rule-based-matching#quantifiers
+                    else {"ORTH": "-", "OP": "?"} if token.text == "-"
+                    # don't use lemma (yeah..because they are not supposed to change)
+                    # using regexp for case-insensitive match
+                    # https://stackoverflow.com/a/42406605
+                    else {"TEXT": {"REGEX": r"(?i){}".format(token.text)}}
                     for token in idiom_doc
                 ]  # include hyphens
-                pattern_no_hyphen = [
-                    {"TAG": "PRP$"} if token.text in self.POSS_HOLDER_CASES.keys()
-                    else {"ORTH": token.text}  # don't use lemma
-                    for token in idiom_doc
-                    if token.text != "-"
-                ]
-                patterns = [
-                    # include two patterns
-                    pattern_hyphen,
-                    pattern_no_hyphen
-                ]
+
+                patterns = [pattern]
             else:
                 pattern = [
                     {"TAG": "PRP$"} if token.text in self.POSS_HOLDER_CASES.keys()

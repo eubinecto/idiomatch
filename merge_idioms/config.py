@@ -28,5 +28,8 @@ IDIOM_PATTERNS_CSV_PATH = path.join(CACHES_DIR, "idiom_patterns.csv")
 # slide tsv data.
 SLIDE_TSV_PATH = path.join(SLIDE_DIR, "slide.tsv")
 
+# the model to use outside of this repo
+MIP_MODEL_PATH = path.join(DATA_DIR, 'mip_model')
+
 # spacy - the model to use.
 NLP_MODEL = "en_core_web_sm"

@@ -1,6 +1,5 @@
 import csv
 import json
-from builders import IdiomPatternsBuilder
 import logging
 from sys import stdout
 from config import IDIOM_PATTERNS_CSV_PATH, IDIOM_PATTERNS_JSON_PATH
