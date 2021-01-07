@@ -1,6 +1,7 @@
 import csv
 import pickle
 from typing import Generator, cast
+
 from spacy.matcher import Matcher
 
 
@@ -14,9 +15,14 @@ class Loader:
 
 class IdiomsLoader(Loader):
     # not to include in the vocabulary
-    EXCEPTIONS = (
+    IGNORED = (
         "if needs be"  # duplicate ->  "if need be" is enough.
     )
+
+    CORRECTION_RULES = {
+        # parenthesis is for when
+        "have blood on one's hands": "have one's blood on one's hands"
+    }
 
     DELIM = "\t"
     SEPARATOR = " "
@@ -29,15 +35,20 @@ class IdiomsLoader(Loader):
         :param target_only: if set to false, it will load all the idioms.
         :return:
         """
+        corrected_idioms = (
+            IdiomsLoader.correct_idiom(idiom)
+            for idiom in self.idioms()
+        )
+
         if target_only:
             return (
                 idiom
-                for idiom in self.idioms()
+                for idiom in corrected_idioms
                 if self.is_target(idiom)
             )
 
         else:
-            return self.idioms()
+            return corrected_idioms
 
     def idioms(self) -> Generator[str, None, None]:
         with open(self.path, 'r') as fh:
@@ -46,6 +57,13 @@ class IdiomsLoader(Loader):
             next(slide_tsv)
             for row in slide_tsv:
                 yield row[0]
+
+    @classmethod
+    def correct_idiom(cls, idiom: str) -> str:
+        if idiom in cls.CORRECTION_RULES.keys():
+            return cls.CORRECTION_RULES[idiom]
+        else:
+            return idiom
 
     @classmethod
     def is_above_min_len(cls, idiom: str) -> bool:
@@ -60,13 +78,13 @@ class IdiomsLoader(Loader):
         return idiom.find("-") != -1
 
     @classmethod
-    def is_not_exception(cls, idiom: str) -> bool:
-        return idiom not in cls.EXCEPTIONS
+    def is_not_ignored(cls, idiom: str) -> bool:
+        return idiom not in cls.IGNORED
 
     @classmethod
     def is_target(cls, idiom: str) -> bool:
         # if it is either long enough or hyphenated, then I'm using it.
-        return cls.is_not_exception(idiom) and \
+        return cls.is_not_ignored(idiom) and \
                (cls.is_above_min_wc(idiom) or
                 cls.is_above_min_len(idiom) or
                 cls.is_hyphenated(idiom))

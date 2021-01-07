@@ -1,29 +1,22 @@
 """
 this is just so that I can always see the pattern matching rules inside idiom matcher.
 """
-
 import csv
-from config import DELIM, IDIOM_MATCHER_INFO_TSV_PATH
+from config import DELIM, IDIOM_MATCHER_INFO_TSV_PATH, IDIOM_MATCHER_PKL_CURR_PATH
 import json
-import argparse
 from mip.loaders import IdiomMatcherLoader
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("idiom_matcher_pkl_path", type=str,
-                        help="path to the pickle binary of idiom_matcher")
-    args = parser.parse_args()
-    matcher_path = args.idiom_matcher_pkl_path
     # load idiom matcher from cache.
-    idiom_matcher_loader = IdiomMatcherLoader(path=matcher_path)
+    idiom_matcher_loader = IdiomMatcherLoader(path=IDIOM_MATCHER_PKL_CURR_PATH)
     idiom_matcher = idiom_matcher_loader.load()
-    # how do I view the rules..?
     with open(IDIOM_MATCHER_INFO_TSV_PATH, 'w') as fh:
         tsv_writer = csv.writer(fh, delimiter=DELIM)
         # write the header
         tsv_writer.writerow(['vocab_id', 'idiom', 'pattern'])
         # write the patterns
+        # this is how you view the rules
         for vocab_id, pattern in idiom_matcher._patterns.items():
             idiom = idiom_matcher.vocab.strings[vocab_id]
             # as for the patterns, serialise it into json strings,

@@ -1,27 +1,12 @@
-
-
-from spacy import load
-from config import NLP_MODEL, MIP_PKL_PATH
-from mip.loaders import IdiomMatcherLoader
-from mip.pipeline import MergeIdiomPipeline
-import argparse
-import pickle
+from config import MIP_PATH, IDIOM_MATCHER_PKL_CURR_PATH
+from mip.builders import MIPBuilder
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("idiom_matcher_pkl_path", type=str,
-                        help="path to the pickle binary of idiom_matcher")
-    args = parser.parse_args()
-    matcher_path = args.idiom_matcher_pkl_path
-    nlp = load(NLP_MODEL)
-    idiom_matcher_loader = IdiomMatcherLoader(path=matcher_path)
-    idiom_matcher = idiom_matcher_loader.load()
-    mip = MergeIdiomPipeline(nlp, idiom_matcher)
-
-    # ah.. come on. this actually works.
-    with open(MIP_PKL_PATH, 'wb') as fh:
-        fh.write(pickle.dumps(mip))
+    # build the pipeline and save it to disk.
+    mip_builder = MIPBuilder()
+    mip_builder.construct(IDIOM_MATCHER_PKL_CURR_PATH)
+    mip_builder.mip.to_disk(MIP_PATH)
 
 
 if __name__ == '__main__':
