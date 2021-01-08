@@ -4,7 +4,7 @@ from builders import IdiomMatcherBuilder
 from spacy import Language, Vocab
 from spacy.matcher import Matcher
 from spacy.tokens import Doc
-from hardcoded import SPECIAL_CASES
+from cases import TOKENISATION_CASES
 
 
 class MergeIdiomsComponent:
@@ -99,7 +99,7 @@ class AddSpecialCasesComponent:
 
     def add_special_cases_to_tok(self):
         # add cases for place holders
-        for term, case in SPECIAL_CASES.items():
+        for term, case in TOKENISATION_CASES.items():
             self.nlp.tokenizer.add_special_case(term, case)
 
 

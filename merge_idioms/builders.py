@@ -4,7 +4,7 @@ from spacy.matcher import Matcher
 from config import SLIDE_TSV_PATH, NLP_MODEL, IDIOM_PATTERNS_JSON_PATH
 from loaders import IdiomsLoader, IdiomPatternsLoader
 import logging
-from hardcoded import POSS_HOLDERS
+from cases import PSS_PLACEHOLDER_CASES
 from sys import stdout
 logging.basicConfig(stream=stdout, level=logging.INFO)  # why does logging not work?
 
@@ -65,7 +65,7 @@ class IdiomPatternsBuilder(Builder):
                 # should include both hyphenated & non-hyphenated forms
                 # e.g. catch-22, catch 22
                 pattern = [
-                    {"TAG": "PRP$"} if token.text in POSS_HOLDERS
+                    {"TAG": "PRP$"} if token.text in PSS_PLACEHOLDER_CASES
                     # OP = ? - no occurrence or 1 occurrence
                     # https://spacy.io/usage/rule-based-matching#quantifiers
                     else {"ORTH": "-", "OP": "?"} if token.text == "-"
@@ -79,7 +79,7 @@ class IdiomPatternsBuilder(Builder):
                 patterns = [pattern]
             else:
                 pattern = [
-                    {"TAG": "PRP$"} if token.text in POSS_HOLDERS
+                    {"TAG": "PRP$"} if token.text in PSS_PLACEHOLDER_CASES
                     # some people may not use comma
                     else {"LEMMA": token.lemma_, "OP": "?"} if token.text == ","
                     else {"LEMMA": token.lemma_}
@@ -93,7 +93,8 @@ class IdiomPatternsBuilder(Builder):
                 {
                     # key = the str rep of idiom
                     # value = the patterns (list of list of dicts)
-                    idiom_norm: patterns
+                    # as for the key, use the string as-is
+                    idiom: patterns
                 }
             )
 
