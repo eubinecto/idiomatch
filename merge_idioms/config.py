@@ -9,7 +9,7 @@ def now() -> str:
     return now_obj.strftime("%d_%m_%Y__%H_%M_%S")
 
 
-# to be used by other models
+# to be used for saving different versions of data
 now_str = now()
 
 # the root directory of this project
@@ -18,7 +18,7 @@ PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent
 LIB_ROOT_DIR = Path(__file__).resolve().parent
 DATA_DIR = path.join(PROJECT_ROOT_DIR, "data")  # maybe if you want to save it.
 CACHES_DIR = path.join(LIB_ROOT_DIR, "caches")
-SLIDE_DIR = path.join(LIB_ROOT_DIR, "slide")
+SLIDE_DIR = path.join(PROJECT_ROOT_DIR, "slide")
 
 
 # caches to be version controlled (and to be used by library)

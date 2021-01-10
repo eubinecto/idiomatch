@@ -4,7 +4,7 @@ from builders import IdiomMatcherBuilder
 from spacy import Language, Vocab
 from spacy.matcher import Matcher
 from spacy.tokens import Doc
-from hardcoded import SPECIAL_CASES
+from cases import TOKENISATION_CASES
 
 
 class MergeIdiomsComponent:
@@ -27,18 +27,18 @@ class MergeIdiomsComponent:
         # use lowercase version of the doc.
         matches = self.idiom_matcher(doc)
         matches = self.greedily_normalize(matches)
-        for vocab_id, start, end in matches:
+        for lemma_id, start, end in matches:
             # get back the lemma for this match
             # note: matcher has references to the vocab on its own!
-            idiom_lemma = self.idiom_matcher.vocab.strings[vocab_id]
+            # idiom_lemma = self.idiom_matcher.vocab.strings[lemma_id]
             # retokenise
+            idiom_lemma = self.idiom_matcher.vocab.strings[lemma_id]
             with doc.retokenize() as retokeniser:
                 # try:
-                retokeniser.merge(doc[start:end],
-                                  # set tag as idiom
-                                  # TODO: make sure you give it vocab_id.
+                retokeniser.merge(doc[start:end],  # list slicing on a doc object will generate a span object
+                                  # TODO: make sure you give it lemma_id.
                                   # TODO: maybe give it a custom is_idiom attribute?
-                                  # how do you do this..?
+                                  # giving the lemma as lemma_id, not lemma string, works.
                                   attrs={'LEMMA': idiom_lemma, 'TAG': 'IDIOM'})
                 # except ValueError as ve:
                 #     print("pass merging for:" + match_lemma)
@@ -99,7 +99,7 @@ class AddSpecialCasesComponent:
 
     def add_special_cases_to_tok(self):
         # add cases for place holders
-        for term, case in SPECIAL_CASES.items():
+        for term, case in TOKENISATION_CASES.items():
             self.nlp.tokenizer.add_special_case(term, case)
 
 

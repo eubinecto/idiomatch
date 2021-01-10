@@ -1,6 +1,7 @@
 import csv
 import json
-from typing import Generator,  List
+from typing import Generator
+from cases import IGNORED_CASES, CORRECTION_CASES
 
 
 class Loader:
@@ -13,19 +14,11 @@ class Loader:
 
 class IdiomsLoader(Loader):
     # not to include in the vocabulary
-    IGNORED = (
-        "if needs be"  # duplicate ->  "if need be" is enough.
-    )
-
-    CORRECTION_RULES = {
-        # parenthesis is for when
-        "have blood on one's hands": "have one's blood on one's hands"
-    }
-
-    DELIM = "\t"
     SEPARATOR = " "
-    IDIOM_MIN_WC = 3  # aim for the idioms with length greater than 3
-    IDIOM_MIN_LENGTH = 14
+
+    # the settings for target idioms
+    MIN_WC = 3  # aim for the idioms with length greater than 3
+    MIN_LENGTH = 14  # aim for the idioms
 
     def load(self, target_only: bool = True) -> Generator[str, None, None]:
         """
@@ -58,18 +51,18 @@ class IdiomsLoader(Loader):
 
     @classmethod
     def correct_idiom(cls, idiom: str) -> str:
-        if idiom in cls.CORRECTION_RULES.keys():
-            return cls.CORRECTION_RULES[idiom]
+        if idiom in CORRECTION_CASES.keys():
+            return CORRECTION_CASES[idiom]
         else:
             return idiom
 
     @classmethod
     def is_above_min_len(cls, idiom: str) -> bool:
-        return len(idiom) >= cls.IDIOM_MIN_LENGTH
+        return len(idiom) >= cls.MIN_LENGTH
 
     @classmethod
     def is_above_min_wc(cls, idiom: str) -> bool:
-        return len(idiom.split(cls.SEPARATOR)) >= cls.IDIOM_MIN_WC
+        return len(idiom.split(cls.SEPARATOR)) >= cls.MIN_WC
 
     @classmethod
     def is_hyphenated(cls, idiom: str) -> bool:
@@ -77,7 +70,7 @@ class IdiomsLoader(Loader):
 
     @classmethod
     def is_not_ignored(cls, idiom: str) -> bool:
-        return idiom not in cls.IGNORED
+        return idiom not in IGNORED_CASES
 
     @classmethod
     def is_target(cls, idiom: str) -> bool:

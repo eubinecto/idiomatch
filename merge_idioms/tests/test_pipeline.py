@@ -5,16 +5,31 @@ from spacy import Language
 
 
 class TestMergeIdiomsPipeline(TestCase):
-
-    # to be used globally
+    # merge-idioms-pipeline.
+    # to be used globally.
     mip: Optional[Language] = None
 
     # utils.
     @classmethod
     def get_lemmas(cls, sent: str) -> List[str]:
+        """
+        returns a string representation of the lemma
+        """
         doc = cls.mip(sent)
         return [
             token.lemma_
+            for token in doc
+        ]
+
+    @classmethod
+    def get_lemma_ids(cls, sent: str) -> List[int]:
+        """
+        returns a hash code for the lemma. I call this "lemma_id".
+        this is the one that vocab.strings receives.
+        """
+        doc = cls.mip(sent)
+        return [
+            token.lemma
             for token in doc
         ]
 
@@ -77,3 +92,37 @@ class TestMergeIdiomsPipeline(TestCase):
                  "but its not the end of the world."
         lemmas_1 = self.get_lemmas(sent_1)
         self.assertIn("not the end of the world", lemmas_1)
+
+    def test_lemma_ids_are_preserved_for_non_idioms(self):
+        sent_1 = "I've got too much on my hands to help."
+        too_lemma_id = self.mip.vocab.strings["too"]
+        much_lemma_id = self.mip.vocab.strings["much"]
+        # # okay. so string_store.__getitem()__ accepts both string and hash code.
+        # too_lemma = self.mip.vocab.strings[too_lemma_id]
+        # self.assertEqual(too_lemma, "too")
+        lemma_ids = self.get_lemma_ids(sent_1)
+        self.assertIn(too_lemma_id, lemma_ids)
+        self.assertIn(much_lemma_id, lemma_ids)
+
+    # testing for preservation of vocab_id of idioms
+    def test_lemma_ids_are_preserved_for_idioms(self):
+        sent_1 = "I've got too much on my hands to help."
+        sent_2 = "default like it does if you add a new program, " \
+                 "but its not the end of the world."
+        sent_3 = " but there comes a time when one has to draw a line in the sand."
+
+        lemma_ids_1 = self.get_lemma_ids(sent_1)
+        lemma_ids_2 = self.get_lemma_ids(sent_2)
+        lemma_ids_3 = self.get_lemma_ids(sent_3)
+        # when are these generated though?
+        # they are generated when patterns are added.
+        # that's why registering LEMMA attribute with lemma_id works.
+        # but how do you... change the token?
+        # maybe... there is no way? just maybe?
+        lemma_id_1 = self.mip.vocab.strings["on one's hands"]
+        lemma_id_2 = self.mip.vocab.strings["not the end of the world"]
+        lemma_id_3 = self.mip.vocab.strings["draw a line in the sand"]
+
+        self.assertIn(lemma_id_1, lemma_ids_1)
+        self.assertIn(lemma_id_2, lemma_ids_2)
+        self.assertIn(lemma_id_3, lemma_ids_3)
