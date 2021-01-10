@@ -33,7 +33,6 @@ class TestMergeIdiomsPipeline(TestCase):
 
     def test_match_catch_22(self):
         sent_1 = "qualities attributed to the drug. It is a catch-22 for any trainer or owner."
-        # TODO: here, the problem is when - followed by a number.
         matches = self.idiom_matcher(self.nlp(sent_1))
         self.assertTrue(matches)
 
