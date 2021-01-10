@@ -2,6 +2,7 @@ import csv
 import json
 from typing import Generator
 from cases import IGNORED_CASES, CORRECTION_CASES
+from config import SLIDE_TSV_PATH, IDIOM_PATTERNS_JSON_PATH
 
 
 class Loader:
@@ -15,10 +16,12 @@ class Loader:
 class IdiomsLoader(Loader):
     # not to include in the vocabulary
     SEPARATOR = " "
-
     # the settings for target idioms
     MIN_WC = 3  # aim for the idioms with length greater than 3
     MIN_LENGTH = 14  # aim for the idioms
+
+    def __init__(self):
+        super().__init__(path=SLIDE_TSV_PATH)
 
     def load(self, target_only: bool = True) -> Generator[str, None, None]:
         """
@@ -82,6 +85,8 @@ class IdiomsLoader(Loader):
 
 
 class IdiomPatternsLoader(Loader):
+    def __init__(self):
+        super().__init__(path=IDIOM_PATTERNS_JSON_PATH)
 
     def load(self, *args, **kwargs) -> dict:
         with open(self.path, 'r') as fh:

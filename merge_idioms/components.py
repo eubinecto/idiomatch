@@ -36,8 +36,6 @@ class MergeIdiomsComponent:
             with doc.retokenize() as retokeniser:
                 # try:
                 retokeniser.merge(doc[start:end],  # list slicing on a doc object will generate a span object
-                                  # TODO: make sure you give it lemma_id.
-                                  # TODO: maybe give it a custom is_idiom attribute?
                                   # giving the lemma as lemma_id, not lemma string, works.
                                   attrs={'LEMMA': idiom_lemma, 'TAG': 'IDIOM'})
                 # except ValueError as ve:
@@ -92,12 +90,12 @@ class AddSpecialCasesComponent:
 
     def __call__(self, doc: Doc) -> Doc:
         # use lowercase version of the doc.
-        self.add_special_cases_to_tok()
+        self.add_tok_cases()
         # just pass the doc.
         # all you want to do is adding the special cases
         return doc
 
-    def add_special_cases_to_tok(self):
+    def add_tok_cases(self):
         # add cases for place holders
         for term, case in TOKENISATION_CASES.items():
             self.nlp.tokenizer.add_special_case(term, case)

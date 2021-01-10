@@ -1,7 +1,7 @@
 from typing import Generator, List, Callable, Optional
 from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
-from config import SLIDE_TSV_PATH, NLP_MODEL, IDIOM_PATTERNS_JSON_PATH
+from config import NLP_MODEL
 from loaders import IdiomsLoader, IdiomPatternsLoader
 import logging
 from cases import PSS_PLACEHOLDER_CASES
@@ -39,7 +39,7 @@ class IdiomPatternsBuilder(Builder):
 
     def prepare(self, *args):
         self.nlp = load(NLP_MODEL)
-        idioms_loader = IdiomsLoader(path=SLIDE_TSV_PATH)
+        idioms_loader = IdiomsLoader()
         self.idioms = idioms_loader.load(target_only=True)
         self.idiom_patterns = dict()
 
@@ -129,7 +129,7 @@ class IdiomMatcherBuilder(Builder):
         """
         prepare the ingredients needed
         """
-        self.idiom_patterns = IdiomPatternsLoader(IDIOM_PATTERNS_JSON_PATH).load()
+        self.idiom_patterns = IdiomPatternsLoader().load()
         self.idiom_matcher = Matcher(self.vocab)
 
     def add_idiom_patterns(self):

@@ -2,21 +2,25 @@ import csv
 import json
 import logging
 from sys import stdout
+from builders import IdiomPatternsBuilder
 from config import IDIOM_PATTERNS_CSV_PATH, IDIOM_PATTERNS_JSON_PATH
-from loaders import IdiomPatternsLoader
-
 logging.basicConfig(stream=stdout, level=logging.INFO)
 
 
 def main():
-    idiom_patterns = IdiomPatternsLoader(IDIOM_PATTERNS_JSON_PATH).load()
+    # save the idiom_patterns
+    idiom_patterns_builder = IdiomPatternsBuilder()
+    idiom_patterns_builder.construct()
+    with open(IDIOM_PATTERNS_JSON_PATH, 'w') as fh:
+        fh.write(json.dumps(idiom_patterns_builder.idiom_patterns))
 
+    # then.. save them in csv.
     with open(IDIOM_PATTERNS_CSV_PATH, 'w') as fh:
         csv_writer = csv.writer(fh)
         # write the header
         csv_writer.writerow(['idiom', 'patterns'])
         # write the rows
-        for idiom, patterns in idiom_patterns.items():
+        for idiom, patterns in idiom_patterns_builder.idiom_patterns.items():
             csv_writer.writerow([idiom, json.dumps(patterns)])
 
 

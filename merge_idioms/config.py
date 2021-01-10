@@ -16,16 +16,21 @@ now_str = now()
 # define the directories here
 PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent
 LIB_ROOT_DIR = Path(__file__).resolve().parent
-DATA_DIR = path.join(PROJECT_ROOT_DIR, "data")  # maybe if you want to save it.
-CACHES_DIR = path.join(LIB_ROOT_DIR, "caches")
-SLIDE_DIR = path.join(PROJECT_ROOT_DIR, "slide")
+# local data are stored here.
+DATA_DIR = path.join(PROJECT_ROOT_DIR, "data")
+# to be distributed
+RESRCS_DIR = path.join(PROJECT_ROOT_DIR, "resources")
 
+# the directories to store resources in
+IDIOMS_DIR = path.join(RESRCS_DIR, "idioms")
+SLIDE_DIR = path.join(RESRCS_DIR, "slide")
 
-# caches to be version controlled (and to be used by library)
-IDIOM_PATTERNS_JSON_PATH = path.join(CACHES_DIR, "idiom_patterns.json")
-IDIOM_PATTERNS_CSV_PATH = path.join(CACHES_DIR, "idiom_patterns.csv")
+# resources for idioms
+IDIOM_PATTERNS_JSON_PATH = path.join(IDIOMS_DIR, "idiom_patterns.json")
+IDIOM_PATTERNS_CSV_PATH = path.join(IDIOMS_DIR, "idiom_patterns.csv")
+TARGET_IDIOMS_TXT_PATH = path.join(IDIOMS_DIR, "target_idioms.txt")
 
-# slide tsv data.
+# resources for slide
 SLIDE_TSV_PATH = path.join(SLIDE_DIR, "slide.tsv")
 
 # the model to use outside of this repo

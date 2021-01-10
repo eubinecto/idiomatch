@@ -114,11 +114,7 @@ class TestMergeIdiomsPipeline(TestCase):
         lemma_ids_1 = self.get_lemma_ids(sent_1)
         lemma_ids_2 = self.get_lemma_ids(sent_2)
         lemma_ids_3 = self.get_lemma_ids(sent_3)
-        # when are these generated though?
-        # they are generated when patterns are added.
-        # that's why registering LEMMA attribute with lemma_id works.
-        # but how do you... change the token?
-        # maybe... there is no way? just maybe?
+
         lemma_id_1 = self.mip.vocab.strings["on one's hands"]
         lemma_id_2 = self.mip.vocab.strings["not the end of the world"]
         lemma_id_3 = self.mip.vocab.strings["draw a line in the sand"]

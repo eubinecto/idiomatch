@@ -8,7 +8,7 @@ en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_
 idna==2.10
 Jinja2==2.11.2
 MarkupSafe==1.1.1
--e git+https://github.com/eubinecto/merge-idioms@f60ae4d6f75f247669b901f3b352a8169980419a#egg=merge_idioms&subdirectory=merge_idioms
+-e git+https://github.com/eubinecto/merge-idioms@220b9a57150b7e49e3ad0e62cd40b008e0171782#egg=merge_idioms
 murmurhash==1.0.5
 numpy==1.19.5
 packaging==20.8
