@@ -1,0 +1,3 @@
+include ./merge_idioms/resources/idiom_patterns.json
+include ./merge_idioms/resources/target_idioms.txt
+

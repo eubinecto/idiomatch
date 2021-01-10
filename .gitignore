@@ -134,3 +134,6 @@ dmypy.json
 .idea/misc.xml
 .idea/modules.xml
 .idea/vcs.xml
+.idea/merge-idioms.iml
+.idea/webResources.xml
+data/readme.md

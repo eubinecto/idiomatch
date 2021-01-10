@@ -1,11 +1,9 @@
 from typing import List, Optional
-
-from builders import IdiomMatcherBuilder
-from spacy import Language, Vocab
+from spacy import Language
 from spacy.matcher import Matcher
 from spacy.tokens import Doc
-from cases import TOKENISATION_CASES
-from loaders import IdiomMatcherLoader
+from builders import IdiomMatcherBuilder
+from merge_idioms.cases import TOKENISATION_CASES
 
 
 class MergeIdiomsComponent:
@@ -22,9 +20,7 @@ class MergeIdiomsComponent:
         # what if you build idiom matcher here?
         # yeah, that makes sense - then, you have to include
         # this may take some time, but once done, you don't need to repeat them.
-        self.idiom_matcher = IdiomMatcherLoader().load()  # the vocab of this matcher...
-        # make sure you sync the vocab
-        self.nlp.vocab = self.idiom_matcher.vocab
+        self.idiom_matcher = self.build_idiom_matcher()
 
     def __call__(self, doc: Doc) -> Doc:
         # use lowercase version of the doc.
@@ -45,6 +41,11 @@ class MergeIdiomsComponent:
                 #     print("pass merging for:" + match_lemma)
                 #     pass
         return doc
+
+    def build_idiom_matcher(self) -> Matcher:
+        idiom_matcher_builder = IdiomMatcherBuilder()
+        idiom_matcher_builder.construct(self.nlp.vocab)
+        return idiom_matcher_builder.idiom_matcher
 
     # need this to fix the duplicate issue.
     def greedily_normalize(self, matches: List[Optional[tuple]]) -> List[tuple]:

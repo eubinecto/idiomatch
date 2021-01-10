@@ -3,10 +3,10 @@ Should include tests for the matcher.
 """
 from typing import Optional
 from unittest import TestCase
-from config import NLP_MODEL
+from builders import IdiomMatcherBuilder
+from config import NLP_MODEL_NAME
 from spacy import load, Language
 from spacy.matcher import Matcher
-from loaders import IdiomMatcherLoader
 
 
 class TestMergeIdiomsPipeline(TestCase):
@@ -22,11 +22,13 @@ class TestMergeIdiomsPipeline(TestCase):
         """
         # prepare resource, before running any tests below
         # I get some rsrc-related warning. Not sure why.
-        nlp = load(NLP_MODEL)
+        nlp = load(NLP_MODEL_NAME)
         nlp.add_pipe("add_special_cases", before="tok2vec")
         # set these as the global variables.
         cls.nlp = nlp
-        cls.idiom_matcher = IdiomMatcherLoader().load()
+        idiom_matcher_builder = IdiomMatcherBuilder()
+        idiom_matcher_builder.construct(cls.nlp.vocab)
+        cls.idiom_matcher = idiom_matcher_builder.idiom_matcher
 
     # rigorously testing for hyphenated terms.
     def test_match_catch_22(self):

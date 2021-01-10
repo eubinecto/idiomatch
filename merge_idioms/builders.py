@@ -1,8 +1,8 @@
 from typing import Generator, List, Callable, Optional
 from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
-from config import NLP_MODEL
-from loaders import IdiomsLoader
+from config import NLP_MODEL_NAME, MIP_NAME, MIP_VERSION
+from loaders import TargetIdiomsLoader, IdiomPatternsLoader
 import logging
 from cases import PSS_PLACEHOLDER_CASES
 from sys import stdout
@@ -26,24 +26,23 @@ class IdiomPatternsBuilder(Builder):
 
     def __init__(self):
         self.nlp: Optional[Language] = None
-        self.idioms: Optional[Generator[str, None, None]] = None
+        self.target_idioms: Optional[Generator[str, None, None]] = None
         # this is the one to build
         self.idiom_patterns: Optional[dict] = None
 
     def steps(self) -> List[Callable]:
         return [
             self.prepare,
-            self.add_component_to_pipe,
+            self.add_tok_special_cases,
             self.build_idiom_patterns
         ]
 
     def prepare(self, *args):
-        self.nlp = load(NLP_MODEL)
-        idioms_loader = IdiomsLoader()
-        self.idioms = idioms_loader.load(target_only=True)
+        self.nlp = load(NLP_MODEL_NAME)
+        self.target_idioms = TargetIdiomsLoader().load()
         self.idiom_patterns = dict()
 
-    def add_component_to_pipe(self):
+    def add_tok_special_cases(self):
         """
         the special cases.
         """
@@ -52,15 +51,14 @@ class IdiomPatternsBuilder(Builder):
     def build_idiom_patterns(self):
         # then add idiom matches
         logger = logging.getLogger("build_idiom_patterns")
-        for idiom in self.idioms:
-            idiom_norm = idiom.lower()
+        for idiom in self.target_idioms:
             # for each idiom, you want to build this.
             # as for building patterns, use uncased version. of the idiom.
             # if you just want to tokenize strings, use
             # nlp.tokenizer.pipe()
             # https://stackoverflow.com/a/59615431
             # I'm not using it here because I need to access lemmas
-            idiom_doc = self.nlp(idiom_norm)
+            idiom_doc = self.nlp(idiom)
             if "-" in idiom:
                 # should include both hyphenated & non-hyphenated forms
                 # e.g. catch-22, catch 22
@@ -94,7 +92,7 @@ class IdiomPatternsBuilder(Builder):
                     # key = the str rep of idiom
                     # value = the patterns (list of list of dicts)
                     # as for the key, use the string as-is
-                    idiom.lower(): patterns
+                    idiom: patterns
                 }
             )
 
@@ -134,9 +132,8 @@ class IdiomMatcherBuilder(Builder):
 
     def build_idiom_patterns(self):
         # build the patterns here.
-        idiom_patterns_builder = IdiomPatternsBuilder()
-        idiom_patterns_builder.construct()
-        self.idiom_patterns = idiom_patterns_builder.idiom_patterns
+        # well..
+        self.idiom_patterns = IdiomPatternsLoader().load()
 
     def add_idiom_patterns(self):
         logger = logging.getLogger("add_idiom_patterns")
@@ -153,13 +150,20 @@ class MIPBuilder(Builder):
     def steps(self) -> List[Callable]:
         return [
             self.prepare,
-            self.add_components
+            self.add_components,
+            self.update_meta
         ]
 
     def prepare(self, *args):
-        self.mip = load(NLP_MODEL)
+        self.mip = load(NLP_MODEL_NAME)
 
     def add_components(self):
         # this is quite an elegant way of doing it!
         self.mip.add_pipe("add_special_cases", before="tok2vec")
         self.mip.add_pipe("merge_idioms", after="lemmatizer")
+
+    def update_meta(self):
+        # can I change the name & version of this pipeline?
+        # you could later add description here.
+        self.mip.meta['name'] += "_" + MIP_NAME
+        self.mip.meta['version'] = MIP_VERSION

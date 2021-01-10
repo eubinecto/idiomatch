@@ -1,17 +1,11 @@
 import csv
-import pickle
-from typing import Generator
-
-from spacy.matcher import Matcher
-
-from cases import IGNORED_CASES, CORRECTION_CASES
-from config import SLIDE_TSV_PATH, IDIOM_MATCHER_PKL_PATH
+import json
+from typing import Generator, Dict
+from merge_idioms.cases import IGNORED_CASES, CORRECTION_CASES
+from merge_idioms.config import TARGET_IDIOMS_TXT_PATH, IDIOM_PATTERNS_JSON_PATH
 
 
 class Loader:
-    def __init__(self, path: str):
-        self.path = path
-
     def load(self, *args, **kwargs):
         raise NotImplementedError
 
@@ -23,8 +17,8 @@ class IdiomsLoader(Loader):
     MIN_WC = 3  # aim for the idioms with length greater than 3
     MIN_LENGTH = 14  # aim for the idioms
 
-    def __init__(self):
-        super().__init__(path=SLIDE_TSV_PATH)
+    def __init__(self, slide_tsv_path: str):
+        self.slide_tsv_path = slide_tsv_path
 
     def load(self, target_only: bool = True) -> Generator[str, None, None]:
         """
@@ -48,7 +42,7 @@ class IdiomsLoader(Loader):
             return corrected_idioms
 
     def idioms(self) -> Generator[str, None, None]:
-        with open(self.path, 'r') as fh:
+        with open(self.slide_tsv_path, 'r') as fh:
             slide_tsv = csv.reader(fh, delimiter="\t")
             # skip the  header
             next(slide_tsv)
@@ -87,10 +81,21 @@ class IdiomsLoader(Loader):
                 cls.is_hyphenated(idiom))
 
 
-class IdiomMatcherLoader(Loader):
+class TargetIdiomsLoader(Loader):
     def __init__(self):
-        super().__init__(path=IDIOM_MATCHER_PKL_PATH)
+        self.target_idioms_txt_path = TARGET_IDIOMS_TXT_PATH
 
-    def load(self, *args, **kwargs) -> Matcher:
-        with open(self.path, 'rb') as fh:
-            return pickle.loads(fh.read())
+    def load(self, *args, **kwargs) -> Generator[str, None, None]:
+        with open(TARGET_IDIOMS_TXT_PATH, 'r') as fh:
+            for line in fh:
+                yield line.strip()
+
+
+class IdiomPatternsLoader(Loader):
+
+    def __init__(self):
+        self.idiom_patterns_json_path = IDIOM_PATTERNS_JSON_PATH
+
+    def load(self, *args, **kwargs) -> Dict[str, list]:
+        with open(self.idiom_patterns_json_path, 'r') as fh:
+            return json.loads(fh.read())
