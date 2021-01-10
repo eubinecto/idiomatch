@@ -2,7 +2,7 @@ from typing import List, Optional
 from spacy import Language
 from spacy.matcher import Matcher
 from spacy.tokens import Doc
-from builders import IdiomMatcherBuilder
+from merge_idioms.builders import IdiomMatcherBuilder
 from merge_idioms.cases import TOKENISATION_CASES
 
 

@@ -1,10 +1,10 @@
 from typing import Generator, List, Callable, Optional
 from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
-from config import NLP_MODEL_NAME, MIP_NAME, MIP_VERSION
-from loaders import TargetIdiomsLoader, IdiomPatternsLoader
+from merge_idioms.config import NLP_MODEL_NAME, MIP_NAME, MIP_VERSION
+from merge_idioms.loaders import TargetIdiomsLoader, IdiomPatternsLoader
+from merge_idioms.cases import PSS_PLACEHOLDER_CASES
 import logging
-from cases import PSS_PLACEHOLDER_CASES
 from sys import stdout
 logging.basicConfig(stream=stdout, level=logging.INFO)  # why does logging not work?
 
