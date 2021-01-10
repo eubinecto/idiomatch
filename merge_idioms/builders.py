@@ -2,7 +2,7 @@ from typing import Generator, List, Callable, Optional
 from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
 from config import NLP_MODEL
-from loaders import IdiomsLoader, IdiomPatternsLoader
+from loaders import IdiomsLoader
 import logging
 from cases import PSS_PLACEHOLDER_CASES
 from sys import stdout
@@ -94,7 +94,7 @@ class IdiomPatternsBuilder(Builder):
                     # key = the str rep of idiom
                     # value = the patterns (list of list of dicts)
                     # as for the key, use the string as-is
-                    idiom: patterns
+                    idiom.lower(): patterns
                 }
             )
 
@@ -122,6 +122,7 @@ class IdiomMatcherBuilder(Builder):
         # order matters. this is why I'm using a builder pattern.
         return [
             self.prepare,
+            self.build_idiom_patterns,
             self.add_idiom_patterns
         ]
 
@@ -129,8 +130,13 @@ class IdiomMatcherBuilder(Builder):
         """
         prepare the ingredients needed
         """
-        self.idiom_patterns = IdiomPatternsLoader().load()
         self.idiom_matcher = Matcher(self.vocab)
+
+    def build_idiom_patterns(self):
+        # build the patterns here.
+        idiom_patterns_builder = IdiomPatternsBuilder()
+        idiom_patterns_builder.construct()
+        self.idiom_patterns = idiom_patterns_builder.idiom_patterns
 
     def add_idiom_patterns(self):
         logger = logging.getLogger("add_idiom_patterns")
@@ -154,5 +160,6 @@ class MIPBuilder(Builder):
         self.mip = load(NLP_MODEL)
 
     def add_components(self):
+        # this is quite an elegant way of doing it!
         self.mip.add_pipe("add_special_cases", before="tok2vec")
         self.mip.add_pipe("merge_idioms", after="lemmatizer")

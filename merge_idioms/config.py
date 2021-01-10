@@ -26,8 +26,8 @@ IDIOMS_DIR = path.join(RESRCS_DIR, "idioms")
 SLIDE_DIR = path.join(RESRCS_DIR, "slide")
 
 # resources for idioms
-IDIOM_PATTERNS_JSON_PATH = path.join(IDIOMS_DIR, "idiom_patterns.json")
-IDIOM_PATTERNS_CSV_PATH = path.join(IDIOMS_DIR, "idiom_patterns.csv")
+IDIOM_MATCHER_PKL_PATH = path.join(IDIOMS_DIR, "idiom_matcher.pkl")
+IDIOM_MATCHER_PATTERNS_CSV_PATH = path.join(IDIOMS_DIR, "idiom_matcher_patterns.csv")
 TARGET_IDIOMS_TXT_PATH = path.join(IDIOMS_DIR, "target_idioms.txt")
 
 # resources for slide

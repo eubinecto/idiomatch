@@ -5,6 +5,7 @@ from spacy import Language, Vocab
 from spacy.matcher import Matcher
 from spacy.tokens import Doc
 from cases import TOKENISATION_CASES
+from loaders import IdiomMatcherLoader
 
 
 class MergeIdiomsComponent:
@@ -13,15 +14,17 @@ class MergeIdiomsComponent:
     because It has to maintain a reference to an instance of idiom_matcher.
     """
 
-    def __init__(self, vocab: Vocab, name: str):
+    def __init__(self, nlp: Language, name: str):
         # these..must be json serializable
-        self.vocab = vocab
+        self.nlp = nlp
         self.name = name  # not sure if this will ever be useful
         # reconstruct idiom matcher here - it'll only be executed once
         # what if you build idiom matcher here?
         # yeah, that makes sense - then, you have to include
         # this may take some time, but once done, you don't need to repeat them.
-        self.idiom_matcher = self.build_idiom_matcher()
+        self.idiom_matcher = IdiomMatcherLoader().load()  # the vocab of this matcher...
+        # make sure you sync the vocab
+        self.nlp.vocab = self.idiom_matcher.vocab
 
     def __call__(self, doc: Doc) -> Doc:
         # use lowercase version of the doc.
@@ -42,14 +45,6 @@ class MergeIdiomsComponent:
                 #     print("pass merging for:" + match_lemma)
                 #     pass
         return doc
-
-    def build_idiom_matcher(self) -> Matcher:
-        # create a new instance here
-        # have to do make this every single time
-        # because matcher is not JSON serializable.
-        idiom_matcher_builder = IdiomMatcherBuilder()
-        idiom_matcher_builder.construct(self.vocab)
-        return idiom_matcher_builder.idiom_matcher
 
     # need this to fix the duplicate issue.
     def greedily_normalize(self, matches: List[Optional[tuple]]) -> List[tuple]:
@@ -107,7 +102,7 @@ class AddSpecialCasesComponent:
     retokenizes=True,  # we are merging, so it does retokenize
 )
 def create_merge_idiom_component(nlp: Language, name: str) -> MergeIdiomsComponent:
-    return MergeIdiomsComponent(nlp.vocab, name)
+    return MergeIdiomsComponent(nlp, name)
 
 
 @Language.factory(

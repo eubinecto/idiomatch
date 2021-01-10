@@ -1,8 +1,11 @@
 import csv
-import json
+import pickle
 from typing import Generator
+
+from spacy.matcher import Matcher
+
 from cases import IGNORED_CASES, CORRECTION_CASES
-from config import SLIDE_TSV_PATH, IDIOM_PATTERNS_JSON_PATH
+from config import SLIDE_TSV_PATH, IDIOM_MATCHER_PKL_PATH
 
 
 class Loader:
@@ -84,10 +87,10 @@ class IdiomsLoader(Loader):
                 cls.is_hyphenated(idiom))
 
 
-class IdiomPatternsLoader(Loader):
+class IdiomMatcherLoader(Loader):
     def __init__(self):
-        super().__init__(path=IDIOM_PATTERNS_JSON_PATH)
+        super().__init__(path=IDIOM_MATCHER_PKL_PATH)
 
-    def load(self, *args, **kwargs) -> dict:
-        with open(self.path, 'r') as fh:
-            return json.loads(fh.read())
+    def load(self, *args, **kwargs) -> Matcher:
+        with open(self.path, 'rb') as fh:
+            return pickle.loads(fh.read())
