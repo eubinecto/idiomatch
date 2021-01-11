@@ -23,6 +23,7 @@ IGNORED_CASES = (
 
 
 # TODO: there must be more cases other than this. How do I automatically define correction rules?
+# well, the only way is to write rigorous test
 CORRECTION_CASES = {
     # it is more often used in the latter form.
     "have blood on one's hands": "have one's blood on one's hands",
@@ -32,3 +33,10 @@ CORRECTION_CASES = {
     # to avoid clashes with somewhere along the line
     "along the lines": "along the line"
 }
+
+
+# to be added.
+MORE_CASES = (
+    # need this to avoid overlapping match of "come down to" & "down-to-earth"
+    "come down to Earth",
+)

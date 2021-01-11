@@ -93,6 +93,12 @@ class TestMergeIdiomsPipeline(TestCase):
         lemmas_1 = self.get_lemmas(sent_1)
         self.assertIn("not the end of the world", lemmas_1)
 
+    def test_greedily_normalise_somewhere_along_the_line(self):
+        sent_1 = "But somewhere along the line the bold and ethical vision of building cities " \
+                 "in the skies has been lost and confused."
+        lemmas_1 = self.get_lemmas(sent_1)
+        self.assertIn("somewhere along the line", lemmas_1)
+
     def test_lemma_ids_are_preserved_for_non_idioms(self):
         sent_1 = "I've got too much on my hands to help."
         too_lemma_id = self.mip.vocab.strings["too"]
@@ -133,8 +139,9 @@ class TestMergeIdiomsPipeline(TestCase):
         self.assertIn("at the end of the day", lemmas_1)
         self.assertIn("go for it", lemmas_1)
 
-    def test_something(self):
-        sent_1 = "But somewhere along the line the bold and ethical vision of building cities " \
-                 "in the skies has been lost and confused."
+    def test_overlapping_match(self):
+        # come down to vs. down-to-earth
+        sent_1 = "Gosh, I must say perhaps we should um, sort of come down to Earth" \
+                 " and sample some of this delightful food."
         lemmas_1 = self.get_lemmas(sent_1)
-        self.assertIn("somewhere along the line", lemmas_1)
+        self.assertIn("come down to earth", lemmas_1)

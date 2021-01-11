@@ -66,11 +66,11 @@ class IdiomPatternsBuilder(Builder):
                     {"TAG": "PRP$"} if token.text in PSS_PLACEHOLDER_CASES
                     # OP = ? - no occurrence or 1 occurrence
                     # https://spacy.io/usage/rule-based-matching#quantifiers
-                    else {"ORTH": "-", "OP": "?"} if token.text == "-"
+                    else {"TEXT": "-", "OP": "?"} if token.text == "-"
                     # don't use lemma (yeah..because they are not supposed to change)
                     # using regexp for case-insensitive match
                     # https://stackoverflow.com/a/42406605
-                    else {"TEXT": {"REGEX": r"(?i){}".format(token.text)}}
+                    else {"TEXT": {"REGEX": r"(?i)^{}$".format(token.text)}}
                     for token in idiom_doc
                 ]  # include hyphens
 
@@ -80,7 +80,7 @@ class IdiomPatternsBuilder(Builder):
                     {"TAG": "PRP$"} if token.text in PSS_PLACEHOLDER_CASES
                     # some people may not use comma
                     else {"LEMMA": token.lemma_, "OP": "?"} if token.text == ","
-                    else {"LEMMA": token.lemma_}
+                    else {"LEMMA": {"REGEX": r"(?i)^{}$".format(token.lemma_)}}
                     for token in idiom_doc
                 ]
                 patterns = [pattern]

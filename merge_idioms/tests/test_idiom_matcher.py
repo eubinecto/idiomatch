@@ -84,3 +84,23 @@ class TestMergeIdiomsPipeline(TestCase):
         sent_1 = " in terms of rhyme, meter, and balls out swagger. "
         matches = self.idiom_matcher(self.nlp(sent_1))
         self.assertTrue(matches)
+
+    def test_come_down_to_earth(self):
+        sent_1 = "Gosh, I must say perhaps we should um, sort of come down to earth" \
+                 " and sample some of this delightful food."
+        matches = self.idiom_matcher(self.nlp(sent_1))
+        lemmas = [
+            self.idiom_matcher.vocab.strings[lemma_id]
+            for (lemma_id, _, _) in matches
+        ]
+        self.assertIn("come down to earth", lemmas)
+
+    def test_come_down_to_earth_capitalised(self):
+        sent_1 = "Gosh, I must say perhaps we should um, sort of come down to Earth" \
+                 " and sample some of this delightful food."
+        matches = self.idiom_matcher(self.nlp(sent_1))
+        lemmas = [
+            self.idiom_matcher.vocab.strings[lemma_id]
+            for (lemma_id, _, _) in matches
+        ]
+        self.assertIn("come down to earth", lemmas)

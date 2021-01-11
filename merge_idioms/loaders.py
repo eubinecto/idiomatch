@@ -1,7 +1,7 @@
 import csv
 import json
-from typing import Generator, Dict
-from merge_idioms.cases import IGNORED_CASES, CORRECTION_CASES
+from typing import Generator, Dict, List
+from merge_idioms.cases import IGNORED_CASES, CORRECTION_CASES, MORE_CASES
 from merge_idioms.config import TARGET_IDIOMS_TXT_PATH, IDIOM_PATTERNS_JSON_PATH
 
 
@@ -41,16 +41,22 @@ class IdiomsLoader(Loader):
         else:
             return corrected_idioms
 
-    def idioms(self) -> Generator[str, None, None]:
+    def idioms(self) -> List[str]:
+        # manually added
         with open(self.slide_tsv_path, 'r') as fh:
             slide_tsv = csv.reader(fh, delimiter="\t")
             # skip the  header
             next(slide_tsv)
-            for row in slide_tsv:
-                yield row[0]
+            idioms = [
+                row[0]
+                for row in slide_tsv
+            ]
+        for more_idiom in MORE_CASES:
+            idioms.append(more_idiom)
+        return idioms
 
-    @classmethod
-    def correct_idiom(cls, idiom: str) -> str:
+    @staticmethod
+    def correct_idiom(idiom: str) -> str:
         if idiom in CORRECTION_CASES.keys():
             return CORRECTION_CASES[idiom]
         else:

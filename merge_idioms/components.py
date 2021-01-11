@@ -1,9 +1,13 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from spacy import Language
 from spacy.matcher import Matcher
-from spacy.tokens import Doc
+from spacy.tokens import Doc, Span
+from spacy.util import filter_spans
+
 from merge_idioms.builders import IdiomMatcherBuilder
 from merge_idioms.cases import TOKENISATION_CASES
+
+Span.set_extension("idiom_lemma", default=None)
 
 
 class MergeIdiomsComponent:
@@ -25,17 +29,25 @@ class MergeIdiomsComponent:
     def __call__(self, doc: Doc) -> Doc:
         # use lowercase version of the doc.
         matches = self.idiom_matcher(doc)
-        matches = self.greedily_normalize(matches)
-        spans_with_lemma = [
-            (doc[start:end], self.idiom_matcher.vocab.strings[lemma_id])
-            for (lemma_id, start, end) in matches
-        ]
+        # longest spans is preferred over short ones.
+        # if you keep on having the same errors.. just use this filter helper.
         with doc.retokenize() as retokeniser:
-            for span, lemma in spans_with_lemma:
+            for span in self.spans_to_merge(doc, matches):
                 retokeniser.merge(span,
-                                  # giving the lemma as lemma_id, not lemma string, works.
-                                  attrs={'LEMMA': lemma, 'TAG': 'IDIOM'})
+                                  # just so we know that they are idioms
+                                  attrs={'LEMMA': span._.idiom_lemma, 'TAG': 'IDIOM'})
         return doc
+
+    def spans_to_merge(self, doc: Doc, matches: Tuple[int, int, int]) -> List[Span]:
+        # get the span candidates
+        spans: List[Span] = list()
+        for lemma_id, start, end in matches:
+            span = doc[start:end]
+            # override with the correct lemma
+            lemma = self.idiom_matcher.vocab.strings[lemma_id]
+            span._.idiom_lemma = lemma
+            spans.append(span)
+        return filter_spans(spans)
 
     def build_idiom_matcher(self) -> Matcher:
         idiom_matcher_builder = IdiomMatcherBuilder()
@@ -58,7 +70,7 @@ class MergeIdiomsComponent:
             for j, match_j in enumerate(matches):
                 lemma_j = self.idiom_matcher.vocab.strings[match_j[0]]
                 if j != i:  # only if they are different
-                    if lemma_j in lemma_i:
+                    if lemma_j.replace("-", " ") in lemma_i.replace("-", " "):
                         to_del.append(j)
         else:
             for del_idx in to_del:
