@@ -132,3 +132,9 @@ class TestMergeIdiomsPipeline(TestCase):
         # so, the problem is, this fails.
         self.assertIn("at the end of the day", lemmas_1)
         self.assertIn("go for it", lemmas_1)
+
+    def test_something(self):
+        sent_1 = "But somewhere along the line the bold and ethical vision of building cities " \
+                 "in the skies has been lost and confused."
+        lemmas_1 = self.get_lemmas(sent_1)
+        self.assertIn("somewhere along the line", lemmas_1)

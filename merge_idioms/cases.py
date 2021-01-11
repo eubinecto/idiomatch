@@ -28,5 +28,7 @@ CORRECTION_CASES = {
     "have blood on one's hands": "have one's blood on one's hands",
     # as for french, people just type them in english.
     "pièce de résistance": "piece de resistance",
-    "crème de la crème": "creme de la creme"
+    "crème de la crème": "creme de la creme",
+    # to avoid clashes with somewhere along the line
+    "along the lines": "along the line"
 }
