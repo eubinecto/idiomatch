@@ -26,20 +26,15 @@ class MergeIdiomsComponent:
         # use lowercase version of the doc.
         matches = self.idiom_matcher(doc)
         matches = self.greedily_normalize(matches)
-        for lemma_id, start, end in matches:
-            # get back the lemma for this match
-            # note: matcher has references to the vocab on its own!
-            # idiom_lemma = self.idiom_matcher.vocab.strings[lemma_id]
-            # retokenise
-            idiom_lemma = self.idiom_matcher.vocab.strings[lemma_id]
-            with doc.retokenize() as retokeniser:
-                # try:
-                retokeniser.merge(doc[start:end],  # list slicing on a doc object will generate a span object
+        spans_with_lemma = [
+            (doc[start:end], self.idiom_matcher.vocab.strings[lemma_id])
+            for (lemma_id, start, end) in matches
+        ]
+        with doc.retokenize() as retokeniser:
+            for span, lemma in spans_with_lemma:
+                retokeniser.merge(span,
                                   # giving the lemma as lemma_id, not lemma string, works.
-                                  attrs={'LEMMA': idiom_lemma, 'TAG': 'IDIOM'})
-                # except ValueError as ve:
-                #     print("pass merging for:" + match_lemma)
-                #     pass
+                                  attrs={'LEMMA': lemma, 'TAG': 'IDIOM'})
         return doc
 
     def build_idiom_matcher(self) -> Matcher:

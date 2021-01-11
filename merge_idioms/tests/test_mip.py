@@ -122,3 +122,13 @@ class TestMergeIdiomsPipeline(TestCase):
         self.assertIn(lemma_id_1, lemma_ids_1)
         self.assertIn(lemma_id_2, lemma_ids_2)
         self.assertIn(lemma_id_3, lemma_ids_3)
+
+    def test_two_idioms_in_one_sent(self):
+        # at the end of the day, go for it.
+        sent_1 = "At the end of the day, you just have to go for it."
+        # later... you have to test for this. should include the case of having the in place of one's
+        # sent_1 = "If she dies, you have the blood on your hands!"
+        lemmas_1 = self.get_lemmas(sent_1)
+        # so, the problem is, this fails.
+        self.assertIn("at the end of the day", lemmas_1)
+        self.assertIn("go for it", lemmas_1)

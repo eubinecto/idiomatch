@@ -5,6 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
+./data/slide
 
 # Distribution / packaging
 .Python
@@ -137,3 +138,4 @@ dmypy.json
 .idea/merge-idioms.iml
 .idea/webResources.xml
 data/readme.md
+data/slide/
