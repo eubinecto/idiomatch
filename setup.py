@@ -2,10 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='merge_idioms',
-    version='0.0.5',
+    version='0.0.6',
     description='spacy pipeline component for merging idioms',
     url='https://github.com/eubinecto/merge-idioms',
     author='Eu-Bin KIM',
+    python_requires='>=3.6',
     author_email='tlrndk123@gmail.com',
     license='MIT LICENSE',
     # this is needed to include the subdirectories in the library
