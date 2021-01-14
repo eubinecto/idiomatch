@@ -7,7 +7,7 @@ from spacy.util import filter_spans
 from merge_idioms.builders import IdiomMatcherBuilder
 from merge_idioms.cases import TOKENISATION_CASES
 
-Span.set_extension("idiom_lemma", default=None)
+Span.set_extension("idiom_lemma", default=None, type_cls=str)
 
 
 class MergeIdiomsComponent:
@@ -35,7 +35,7 @@ class MergeIdiomsComponent:
             for span in self.spans_to_merge(doc, matches):
                 retokeniser.merge(span,
                                   # just so we know that they are idioms
-                                  attrs={'LEMMA': span._.idiom_lemma, 'TAG': 'IDIOM'})
+                                  attrs={'LEMMA': span._.idiom_lemma})
         return doc
 
     def spans_to_merge(self, doc: Doc, matches: Tuple[int, int, int]) -> List[Span]:

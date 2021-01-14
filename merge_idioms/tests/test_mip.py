@@ -139,6 +139,17 @@ class TestMergeIdiomsPipeline(TestCase):
         self.assertIn("at the end of the day", lemmas_1)
         self.assertIn("go for it", lemmas_1)
 
+    def test_two_idioms_in_one_sent_custom_property(self):
+        # at the end of the day, go for it.
+        sent_1 = "At the end of the day, your fate is on your hands."
+        # later... you have to test for this. should include the case of having the in place of one's
+        # sent_1 = "If she dies, you have the blood on your hands!"
+        lemmas_1 = self.get_lemmas(sent_1)
+        print(lemmas_1)
+        # so, the problem is, this fails.
+        self.assertIn("at the end of the day", lemmas_1)
+        self.assertIn("on one's hands", lemmas_1)
+
     def test_overlapping_match(self):
         # come down to vs. down-to-earth
         sent_1 = "Gosh, I must say perhaps we should um, sort of come down to Earth" \

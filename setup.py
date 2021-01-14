@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='merge_idioms',
-    version='0.0.6',
+    version='0.0.7',
     description='spacy pipeline component for merging idioms',
     url='https://github.com/eubinecto/merge-idioms',
     author='Eu-Bin KIM',
@@ -15,7 +15,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'spacy-nightly>=3.0.0rc2',
-        'en_core_web_sm>=3.0.0a0',
+        'en-core-web-sm-mirror',
     ],
     entry_points={
         'spacy_factories': [
