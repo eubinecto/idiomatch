@@ -19,7 +19,7 @@ mip_builder.construct()
 mip = mip_builder.mip
 
 # example sentence that includes an idiom
-sent = " but there comes a time when one has to draw a line in the sand."
+sent = "At the end of the day, your fate is on your hands."
 # execute pipeline
 doc = mip(sent)
 # get the lemmas & tags
