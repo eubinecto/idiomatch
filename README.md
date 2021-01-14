@@ -1,6 +1,13 @@
 # merge-idioms
 Implementation of Spacy's NLP pipeline for merging idioms as standalone tokens. 
 
+## install
+```
+# install the library
+pip3 install merge-idioms
+# the library requires english model
+python3 spacy -m download en_core_web_sm
+```
 
 ## Quick Start
 ```python
