@@ -1,6 +1,6 @@
 from spacy import Language, Vocab
 from spacy.matcher import Matcher
-import builders
+from merge_idioms import builders
 
 
 def build_mip() -> Language:

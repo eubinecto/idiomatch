@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='merge_idioms',
-    version='0.0.8',
+    version='0.0.9',
     description='spacy pipeline component for merging idioms',
     url='https://github.com/eubinecto/merge-idioms',
     author='Eu-Bin KIM',
