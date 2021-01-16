@@ -1,31 +1,56 @@
 # merge-idioms
-Implementation of Spacy's NLP pipeline for merging idioms as standalone tokens. 
+Spacy's NLP pipeline for merging idioms as standalone tokens.
 
 ## install
+
+install the library:
 ```
-# install the library
 pip3 install merge-idioms
-# the library requires english model
+
+download Spacy's English core model:
+```
 python3 spacy -m download en_core_web_sm
 ```
 
 ## Quick Start
 ```python
+from merge_idioms import build_mip
 
-from merge_idioms import MIPBuilder
-mip_builder = MIPBuilder()
-mip_builder.construct()
-# merge-idiom-pipeline
-mip = mip_builder.mip
+sentences = [
+    "At the end of the day, your fate is on your hands.",
+    "She claimed that it was a Catch 22 situation for her.",
+    "they were teaching me a lesson for daring to complain."
+]
+# build a spacy pipeline for merging idioms, based off of en_core_web_sm model
+mip = build_mip()
 
-# example sentence that includes an idiom
-sent = "At the end of the day, your fate is on your hands."
-# execute pipeline
-doc = mip(sent)
-# get the lemmas & tags
-lemmas = [token.lemma_ for token in doc]
-print(lemmas)
+for sent in sentences:
+    # process the sentence
+    doc = mip(sent)
+    # idioms are merged to standalone tokens
+    token_texts = [token.text for token in doc]
+    # supports lemmatization as well
+    token_lemmas = [token.lemma_ for token in doc]
+    # is_idiom custom attribute could be used to identify idioms
+    token_idioms = [token.lemma_ for token in doc if token._.is_idiom]
+
+    print("tokenisation:",token_texts)
+    print("lemmatisation:", token_lemmas)
+    print("filtering:", token_idioms)
+    print("-----------")
+
 ```
 ```
-['at the end of the day', ',', 'your', 'fate', 'be', "on one's hands", '.']
+tokenisation: ['At the end of the day', ',', 'your', 'fate', 'is', 'on your hands', '.']
+lemmatisation: ['at the end of the day', ',', 'your', 'fate', 'be', "on one's hands", '.']
+filtering: ['at the end of the day', "on one's hands"]
+-----------
+tokenisation: ['She', 'claimed', 'that', 'it', 'was', 'a', 'Catch 22', 'situation', 'for', 'her', '.']
+lemmatisation: ['she', 'claim', 'that', 'it', 'be', 'a', 'catch-22', 'situation', 'for', 'she', '.']
+filtering: ['catch-22']
+-----------
+tokenisation: ['they', 'were', 'teaching me a lesson', 'for', 'daring', 'to', 'complain', '.']
+lemmatisation: ['they', 'be', 'teach someone a lesson', 'for', 'dare', 'to', 'complain', '.']
+filtering: ['teach someone a lesson']
+-----------
 ```

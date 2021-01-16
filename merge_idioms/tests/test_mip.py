@@ -1,7 +1,7 @@
 from typing import List, Optional
 from unittest import TestCase
-from builders import MIPBuilder
 from spacy import Language
+from merge_idioms import build_mip
 
 
 class TestMergeIdiomsPipeline(TestCase):
@@ -40,9 +40,7 @@ class TestMergeIdiomsPipeline(TestCase):
         """
         # prepare resource, before running any tests below
         # I get some rsrc-related warning. Not sure why.
-        mip_builder = MIPBuilder()
-        mip_builder.construct()
-        cls.mip = mip_builder.mip
+        cls.mip = build_mip()
 
     def test_greedily_normalize_on_ones_hands(self):
         sent_1 = "I've got too much on my hands to help."
@@ -145,7 +143,6 @@ class TestMergeIdiomsPipeline(TestCase):
         # later... you have to test for this. should include the case of having the in place of one's
         # sent_1 = "If she dies, you have the blood on your hands!"
         lemmas_1 = self.get_lemmas(sent_1)
-        print(lemmas_1)
         # so, the problem is, this fails.
         self.assertIn("at the end of the day", lemmas_1)
         self.assertIn("on one's hands", lemmas_1)
@@ -156,3 +153,49 @@ class TestMergeIdiomsPipeline(TestCase):
                  " and sample some of this delightful food."
         lemmas_1 = self.get_lemmas(sent_1)
         self.assertIn("come down to earth", lemmas_1)
+
+    def test_custom_attr_is_idiom(self):
+        sent_1 = "At the end of the day, your fate is on your hands."
+        idiom_lemmas = [
+            token.lemma_
+            for token in self.mip(sent_1)
+            if token._.is_idiom  # this is the custom attribute
+        ]
+        self.assertIn("at the end of the day", idiom_lemmas)
+        self.assertIn("on one's hands", idiom_lemmas)
+        self.assertTrue(len(idiom_lemmas) == 2)
+
+    def test_replace_someone_with_noun(self):
+        sent = "they were teaching me a lesson for daring to complain."
+        # get posses
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("teach someone a lesson", lemmas)
+
+    def test_I_ll_be_damned(self):
+        sent = "I'll be damned! Our team actually won!"
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("I'll be damned", lemmas)
+
+    def test_she_ll_be_right(self):
+        pass
+
+# TODO: fix this later - tests to write for matcher
+    # def test_sex_drugs_and_rock_and_roll(self):
+    #     sent_1 = "Being a touring musician is not as exciting as it" \
+    #              " seems—it's definitely not all sex, drugs, and rock & roll."
+    #     sent_2 = "Being a touring musician is not as exciting as it" \
+    #              " seems—it's definitely not all sex, drugs, and rock 'n' roll."
+    #     sent_3 = "Being a touring musician is not as exciting as it" \
+    #              " seems—it's definitely not all sex, drugs, rock n roll."
+    #     lemmas_1 = self.get_lemmas(sent_1)
+    #     lemmas_2 = self.get_lemmas(sent_2)
+    #     lemmas_3 = self.get_lemmas(sent_3)
+    #     self.assertIn("sex, drugs, and rock & roll", lemmas_1)
+    #     self.assertIn("sex, drugs, and rock 'n' roll", lemmas_2)
+    #     self.assertIn("sex, drugs, and rock 'n' roll", lemmas_3)
+
+    def test_shoot_em_up(self):
+        sent_1 = "I used to love playing shoot 'em ups at our local arcade growing up."
+        lemmas_1 = self.get_lemmas(sent_1)
+        self.assertIn("shoot 'em up", lemmas_1)
+

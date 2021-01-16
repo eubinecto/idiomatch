@@ -3,7 +3,8 @@ Just some constants that must be defined manually
 """
 
 # to be used in components.py - the special cases
-PSS_PLACEHOLDER_CASES = ('one\'s', 'someone\'s')
+PRP_PLACEHOLDER_CASES = ('one\'s', 'someone\'s')
+PRON_PLACEHOLDER_CASES = ('someone',)
 
 # this follows the syntax for spacy's tokenization
 TOKENISATION_CASES = {
@@ -11,7 +12,7 @@ TOKENISATION_CASES = {
     "someone's": [{"ORTH": "someone's"}],
     # TODO: is this really the only way?
     "catch-22": [{"ORTH": "catch"}, {"ORTH": "-"}, {"ORTH": "22"}],
-    "Catch-22": [{"ORTH": "Catch"}, {"ORTH": "-"}, {"ORTH": "22"}]  # also need a capitalised case.
+    "Catch-22": [{"ORTH": "Catch"}, {"ORTH": "-"}, {"ORTH": "22"}],  # also need a capitalised case.
 
 }
 
@@ -31,7 +32,7 @@ CORRECTION_CASES = {
     "pièce de résistance": "piece de resistance",
     "crème de la crème": "creme de la creme",
     # to avoid clashes with somewhere along the line
-    "along the lines": "along the line"
+    "along the lines": "along the line",
 }
 
 

@@ -5,11 +5,11 @@ downing street
 elysian fields
 faustian bargain
 great britain and ireland
-i can tell you
-i never did
-i rest my case
-i take it
-i'll be damned
+I can tell you
+I never did
+I rest my case
+I take it
+I'll be damned
 johnny-come-lately
 monday-morning quarterback
 monopoly money
@@ -103,7 +103,7 @@ area of influence
 arm and a leg
 around the clock
 around the corner
-as i was saying
+as I was saying
 as a rule
 as a whole
 as all get-out
@@ -1076,8 +1076,8 @@ hugs and kisses
 hurt someone's feelings
 husband and wife
 hustle and bustle
-if i do say so myself
-if i'm honest
+if I do say so myself
+if I'm honest
 if need be
 if nothing else
 ifs, ands, or buts
@@ -2189,7 +2189,7 @@ something like
 somewhere along the line
 song and dance
 soup-to-nuts
-spaghetti western
+spaghettI western
 spare no effort
 speak one's mind
 speak someone's language
@@ -2657,7 +2657,7 @@ weekend warrior
 weight of the world
 well and good
 well and truly
-well, i never
+well, I never
 well-oiled
 well-padded
 wet behind the ears
@@ -2665,8 +2665,8 @@ wet one's pants
 wet the bed
 whack-a-mole
 what are the odds
-what can i say
-what do i know
+what can I say
+what do I know
 what do you say
 what else is new
 what is more

@@ -3,7 +3,7 @@ from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
 from merge_idioms.config import NLP_MODEL_NAME, MIP_NAME, MIP_VERSION
 from merge_idioms.loaders import TargetIdiomsLoader, IdiomPatternsLoader
-from merge_idioms.cases import PSS_PLACEHOLDER_CASES
+from merge_idioms.cases import PRP_PLACEHOLDER_CASES, PRON_PLACEHOLDER_CASES
 import logging
 from sys import stdout
 logging.basicConfig(stream=stdout, level=logging.INFO)  # why does logging not work?
@@ -27,8 +27,7 @@ class IdiomPatternsBuilder(Builder):
     def __init__(self):
         self.nlp: Optional[Language] = None
         self.target_idioms: Optional[Generator[str, None, None]] = None
-        # this is the one to build
-        self.idiom_patterns: Optional[dict] = None
+        self.idiom_patterns: Optional[dict] = None  # to build
 
     def steps(self) -> List[Callable]:
         return [
@@ -44,7 +43,7 @@ class IdiomPatternsBuilder(Builder):
 
     def add_tok_special_cases(self):
         """
-        the special cases.
+        the special cases.  (one's, someone's, catch-22.. etc)
         """
         self.nlp.add_pipe("add_special_cases", before="tok2vec")
 
@@ -52,34 +51,28 @@ class IdiomPatternsBuilder(Builder):
         # then add idiom matches
         logger = logging.getLogger("build_idiom_patterns")
         for idiom in self.target_idioms:
-            # for each idiom, you want to build this.
-            # as for building patterns, use uncased version. of the idiom.
-            # if you just want to tokenize strings, use
-            # nlp.tokenizer.pipe()
-            # https://stackoverflow.com/a/59615431
-            # I'm not using it here because I need to access lemmas
             idiom_doc = self.nlp(idiom)
-            if "-" in idiom:
-                # should include both hyphenated & non-hyphenated forms
-                # e.g. catch-22, catch 22
+            if "-" in idiom:  # hyphenated idioms
                 pattern = [
-                    {"TAG": "PRP$"} if token.text in PSS_PLACEHOLDER_CASES
+                    {"TAG": "PRP$"} if token.text in PRP_PLACEHOLDER_CASES
                     # OP = ? - no occurrence or 1 occurrence
                     # https://spacy.io/usage/rule-based-matching#quantifiers
                     else {"TEXT": "-", "OP": "?"} if token.text == "-"
-                    # don't use lemma (yeah..because they are not supposed to change)
+                    # don't use lemma (this is to avoid false-positives as much as I can)
                     # using regexp for case-insensitive match
                     # https://stackoverflow.com/a/42406605
                     else {"TEXT": {"REGEX": r"(?i)^{}$".format(token.text)}}
                     for token in idiom_doc
                 ]  # include hyphens
-
                 patterns = [pattern]
-            else:
+            else:  # non-hyphenated idioms
                 pattern = [
-                    {"TAG": "PRP$"} if token.text in PSS_PLACEHOLDER_CASES
+                    {"TAG": "PRP$"} if token.text in PRP_PLACEHOLDER_CASES
+                    else {"POS": "PRON"} if token.text in PRON_PLACEHOLDER_CASES
                     # some people may not use comma
-                    else {"LEMMA": token.lemma_, "OP": "?"} if token.text == ","
+                    else {"TEXT": ",", "OP": "?"} if token.text == ","  # comma is optional
+                    else {"TEXT": "and", "OP": "?"} if token.text == "and"  # and is optional
+                    else {"TEXT": {"REGEX": r"^(and|\'n\'|\'n|&)$"}} if token.text == "&"  # for 'n'
                     else {"LEMMA": {"REGEX": r"(?i)^{}$".format(token.lemma_)}}
                     for token in idiom_doc
                 ]
@@ -120,7 +113,7 @@ class IdiomMatcherBuilder(Builder):
         # order matters. this is why I'm using a builder pattern.
         return [
             self.prepare,
-            self.build_idiom_patterns,
+            self.load_idiom_patterns,
             self.add_idiom_patterns
         ]
 
@@ -130,7 +123,7 @@ class IdiomMatcherBuilder(Builder):
         """
         self.idiom_matcher = Matcher(self.vocab)
 
-    def build_idiom_patterns(self):
+    def load_idiom_patterns(self):
         # build the patterns here.
         # well..
         self.idiom_patterns = IdiomPatternsLoader().load()
@@ -150,17 +143,19 @@ class MIPBuilder(Builder):
     def steps(self) -> List[Callable]:
         return [
             self.prepare,
-            self.add_components,
+            self.add_merge_idiom_comp,
             self.update_meta
         ]
 
     def prepare(self, *args):
+        # nlp model is the base
         self.mip = load(NLP_MODEL_NAME)
 
-    def add_components(self):
-        # this is quite an elegant way of doing it!
-        self.mip.add_pipe("add_special_cases", before="tok2vec")
-        self.mip.add_pipe("merge_idioms", after="lemmatizer")
+    def add_merge_idiom_comp(self):
+        # make sure the component is added at the end of the pipeline.
+        # or, at least after tok2vec & lemmatizer
+        self.mip.add_pipe("add_special_cases", first=True)
+        self.mip.add_pipe("merge_idioms", last=True)
 
     def update_meta(self):
         # can I change the name & version of this pipeline?

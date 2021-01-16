@@ -3,10 +3,10 @@ Should include tests for the matcher.
 """
 from typing import Optional
 from unittest import TestCase
-from builders import IdiomMatcherBuilder
 from config import NLP_MODEL_NAME
 from spacy import load, Language
 from spacy.matcher import Matcher
+from merge_idioms import build_idiom_matcher
 
 
 class TestMergeIdiomsPipeline(TestCase):
@@ -26,9 +26,7 @@ class TestMergeIdiomsPipeline(TestCase):
         nlp.add_pipe("add_special_cases", before="tok2vec")
         # set these as the global variables.
         cls.nlp = nlp
-        idiom_matcher_builder = IdiomMatcherBuilder()
-        idiom_matcher_builder.construct(cls.nlp.vocab)
-        cls.idiom_matcher = idiom_matcher_builder.idiom_matcher
+        cls.idiom_matcher = build_idiom_matcher(nlp.vocab)
 
     # rigorously testing for hyphenated terms.
     def test_match_catch_22(self):

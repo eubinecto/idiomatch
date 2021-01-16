@@ -26,20 +26,28 @@ class IdiomsLoader(Loader):
         :param target_only: if set to false, it will load all the idioms.
         :return:
         """
-        corrected_idioms = (
+        to_return = (
             IdiomsLoader.correct_idiom(idiom)
             for idiom in self.idioms()
         )
 
         if target_only:
-            return (
+            to_return = (
                 idiom
-                for idiom in corrected_idioms
+                for idiom in to_return
                 if self.is_target(idiom)
             )
 
-        else:
-            return corrected_idioms
+        return (
+            # lower everything but I
+            idiom.lower()
+                 .replace("i ", "I ")
+                 .replace(" i ", " I ")
+                 .replace("i'm", "I'm")
+                 .replace("i'll", "I'll")
+                 .replace("i\'d", "I'd")
+            for idiom in to_return
+        )
 
     def idioms(self) -> List[str]:
         # manually added
