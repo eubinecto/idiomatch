@@ -1,12 +1,12 @@
 # merge-idioms
-Spacy's NLP pipeline for merging idioms as standalone tokens.
+Implementation of custom component in [SpaCy(3.0)](https://nightly.spacy.io) for merging idioms into stand-alone tokens.
 
 ## install
 
 install the library:
 ```
 pip3 install merge-idioms
-
+```
 download Spacy's English core model:
 ```
 python3 spacy -m download en_core_web_sm
@@ -40,6 +40,7 @@ for sent in sentences:
     print("-----------")
 
 ```
+output:
 ```
 tokenisation: ['At the end of the day', ',', 'your', 'fate', 'is', 'on your hands', '.']
 lemmatisation: ['at the end of the day', ',', 'your', 'fate', 'be', "on one's hands", '.']
