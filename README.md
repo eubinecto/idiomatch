@@ -2,7 +2,7 @@
 
 Implementation of custom Pipeline Component in [SpaCy(3.0)](https://nightly.spacy.io) for merging idioms into stand-alone tokens.
 
-## install
+## Install
 
 install the library:
 ```
@@ -57,7 +57,7 @@ filtering: ['teach someone a lesson']
 -----------
 ```
 
-## Supported idioms
+## Supported Idioms
 List of supported idioms with matching patterns can be found in [`merge-idioms/merge_idioms/resources/idiom_patterns.csv`](https://github.com/eubinecto/merge-idioms/blob/main/merge_idioms/resources/idiom_patterns.csv). Total of 2758 idioms are available for
 matching & merging. These "target idioms" were extracted from a vocabulary of 5000 most 
 frequently used English idioms, which had been made available for open use courtesy of [IBM's SLIDE project](https://developer.ibm.com/exchanges/data/all/sentiment-lexicon-of-idiomatic-expressions/). 
