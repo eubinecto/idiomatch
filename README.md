@@ -15,7 +15,7 @@ python3 spacy -m download en_core_web_sm
 
 ## Quick Start
 ```python
-from merge_idioms import build_mip
+from merge_idioms.service import build_mip
 
 sentences = [
     "At the end of the day, your fate is on your hands.",
