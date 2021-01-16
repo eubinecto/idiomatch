@@ -1,5 +1,6 @@
 # merge-idioms
-Implementation of custom component in [SpaCy(3.0)](https://nightly.spacy.io) for merging idioms into stand-alone tokens.
+
+Implementation of custom Pipeline Component in [SpaCy(3.0)](https://nightly.spacy.io) for merging idioms into stand-alone tokens.
 
 ## install
 
@@ -7,7 +8,7 @@ install the library:
 ```
 pip3 install merge-idioms
 ```
-download Spacy's English core model:
+download Spacy's core model for English:
 ```
 python3 spacy -m download en_core_web_sm
 ```
@@ -55,3 +56,8 @@ lemmatisation: ['they', 'be', 'teach someone a lesson', 'for', 'dare', 'to', 'co
 filtering: ['teach someone a lesson']
 -----------
 ```
+
+## Supported idioms
+List of supported idioms with matching patterns can be found in [`merge-idioms/merge_idioms/resources/idiom_patterns.csv`](https://github.com/eubinecto/merge-idioms/blob/main/merge_idioms/resources/idiom_patterns.csv). Total of 2758 idioms are available for
+matching & merging. These "target idioms" were extracted from a vocabulary of 5000 most 
+frequently used English idioms, which had been made available for open use courtesy of [IBM's SLIDE project](https://developer.ibm.com/exchanges/data/all/sentiment-lexicon-of-idiomatic-expressions/). 
