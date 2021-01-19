@@ -1,7 +1,7 @@
 """
 Should include tests for the matcher.
 """
-from typing import Optional
+from typing import Optional, List
 from unittest import TestCase
 from config import NLP_MODEL_NAME
 from spacy import load, Language
@@ -27,6 +27,13 @@ class TestMergeIdiomsPipeline(TestCase):
         # set these as the global variables.
         cls.nlp = nlp
         cls.idiom_matcher = build_idiom_matcher(nlp.vocab)
+
+    def get_lemmas(self, sent: str) -> List[str]:
+        matches = self.idiom_matcher(self.nlp(sent))
+        return [
+            self.idiom_matcher.vocab.strings[lemma_id]
+            for (lemma_id, _, _) in matches
+        ]
 
     # rigorously testing for hyphenated terms.
     def test_match_catch_22(self):
@@ -86,19 +93,27 @@ class TestMergeIdiomsPipeline(TestCase):
     def test_come_down_to_earth(self):
         sent_1 = "Gosh, I must say perhaps we should um, sort of come down to earth" \
                  " and sample some of this delightful food."
-        matches = self.idiom_matcher(self.nlp(sent_1))
-        lemmas = [
-            self.idiom_matcher.vocab.strings[lemma_id]
-            for (lemma_id, _, _) in matches
-        ]
+        lemmas = self.get_lemmas(sent_1)
         self.assertIn("come down to earth", lemmas)
 
     def test_come_down_to_earth_capitalised(self):
         sent_1 = "Gosh, I must say perhaps we should um, sort of come down to Earth" \
                  " and sample some of this delightful food."
-        matches = self.idiom_matcher(self.nlp(sent_1))
-        lemmas = [
-            self.idiom_matcher.vocab.strings[lemma_id]
-            for (lemma_id, _, _) in matches
-        ]
+        lemmas = self.get_lemmas(sent_1)
         self.assertIn("come down to earth", lemmas)
+
+    def test_article_a_optional(self):
+        sent = "I hope a couple of you shed tear when you heard I'd carked it."
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("shed a tear", lemmas)
+
+    def test_article_an_optional(self):
+        sent = "Because she would not take no for answer."
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("take no for an answer", lemmas)
+
+    def test_article_the_optional(self):
+        sent = "You want a secure computer and online experience, " \
+               "then take the bull by horns and make it happen."
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("take the bull by the horns", lemmas)
