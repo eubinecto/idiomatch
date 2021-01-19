@@ -117,3 +117,9 @@ class TestMergeIdiomsPipeline(TestCase):
                "then take the bull by horns and make it happen."
         lemmas = self.get_lemmas(sent)
         self.assertIn("take the bull by the horns", lemmas)
+
+    def test_comma_optional(self):
+        sent = "Also, all those who believe that marriage makes people this that and the other" \
+               " more than cohabitation is relying on OLD studies. "
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("this, that, and the other", lemmas)
