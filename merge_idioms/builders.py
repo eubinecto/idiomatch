@@ -8,7 +8,8 @@ from merge_idioms.loaders import TargetIdiomsLoader, IdiomPatternsLoader
 from merge_idioms.cases import PRP_PLACEHOLDER_CASES, PRON_PLACEHOLDER_CASES, OPTIONAL_CASES
 import logging
 from sys import stdout
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag, NavigableString
+
 logging.basicConfig(stream=stdout, level=logging.INFO)  # why does logging not work?
 
 
@@ -167,11 +168,18 @@ class MIPBuilder(Builder):
 class AlternativesBuilder(Builder):
 
     WIKTIONARY_ENDPOINT = "https://en.wiktionary.org/wiki/{lemma}"
+    ALTS_SPAN_ID = "Alternative_forms"
 
     def __init__(self):
         self.lemma: Optional[str] = None
         self.html: Optional[str] = None
         self.soup: Optional[BeautifulSoup] = None
+        # the tags to find
+        self.alts_span: Optional[Tag] = None
+        self.alts_h3: Optional[Tag] = None
+        self.alts_ul: Optional[Tag] = None
+        self.alts_anchors: Optional[List[Tag]] = None
+        # the one to build
         self.alternatives: Optional[List[str]] = None
 
     def construct(self, lemma: str):
@@ -181,8 +189,10 @@ class AlternativesBuilder(Builder):
     def steps(self) -> List[Callable]:
         return [
             self.prepare,
-            ...,
-            # build alternatives at the end
+            self.find_alts_span,
+            self.find_alts_h3,
+            self.find_alts_ul,
+            self.find_alts_anchors,
             self.build_alternatives
         ]
 
@@ -191,7 +201,29 @@ class AlternativesBuilder(Builder):
         r = requests.get(url=self.WIKTIONARY_ENDPOINT.format(lemma=self.lemma))
         r.raise_for_status()
         self.html = r.text
-        self.soup = BeautifulSoup(self.html,'html.parser')
+        self.soup = BeautifulSoup(self.html, 'html.parser')
+
+    def find_alts_span(self):
+        self.alts_span = self.soup.find('span', attrs={'id': self.ALTS_SPAN_ID})
+
+    def find_alts_h3(self):
+        if self.alts_span:
+            self.alts_h3 = self.alts_span.parent
+
+    def find_alts_ul(self):
+        if self.alts_h3:
+            # well, make sure you do next_sibling twice (due to the newline element)
+            self.alts_ul = self.alts_h3.next_sibling.next_sibling
+
+    def find_alts_anchors(self):
+        if self.alts_ul:
+            self.alts_anchors = self.alts_ul.find_all('a')
 
     def build_alternatives(self):
-        pass
+        if self.alts_anchors:
+            self.alternatives = [
+                alt_a['title'].strip()
+                for alt_a in self.alts_anchors
+            ]
+        else:
+            self.alternatives = list()

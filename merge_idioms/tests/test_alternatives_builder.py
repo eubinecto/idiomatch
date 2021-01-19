@@ -15,8 +15,10 @@ class TestAlternativesBuilder(TestCase):
         self.alts_builder.construct(lemma=idiom_lemma)
         self.assertIn("beat about the bush", self.alts_builder.alternatives)
 
-    def test_when_alternatives_do_not_exist(self):
+    def test_when_alternatives_do_not_exist_is_empty_list(self):
         # should be an empty list
         idiom_lemma = "go for it"
         self.alts_builder.construct(lemma=idiom_lemma)
+        # must be an empty list
+        self.assertIsInstance(self.alts_builder.alternatives, list)
         self.assertFalse(self.alts_builder.alternatives)
