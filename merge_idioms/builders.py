@@ -1,5 +1,4 @@
 from typing import Generator, List, Callable, Optional
-
 import requests
 from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
@@ -8,8 +7,8 @@ from merge_idioms.loaders import TargetIdiomsLoader, IdiomPatternsLoader
 from merge_idioms.cases import PRP_PLACEHOLDER_CASES, PRON_PLACEHOLDER_CASES, OPTIONAL_CASES
 import logging
 from sys import stdout
-from bs4 import BeautifulSoup, Tag, NavigableString
-
+from bs4 import BeautifulSoup, Tag
+from urllib.parse import quote_plus
 logging.basicConfig(stream=stdout, level=logging.INFO)  # why does logging not work?
 
 
@@ -172,6 +171,7 @@ class AlternativesBuilder(Builder):
 
     def __init__(self):
         self.lemma: Optional[str] = None
+        self.url: Optional[str] = None
         self.html: Optional[str] = None
         self.soup: Optional[BeautifulSoup] = None
         # the tags to find
@@ -180,7 +180,7 @@ class AlternativesBuilder(Builder):
         self.alts_ul: Optional[Tag] = None
         self.alts_anchors: Optional[List[Tag]] = None
         # the one to build
-        self.alternatives: Optional[List[str]] = None
+        self.alts: Optional[List[str]] = None
 
     def construct(self, lemma: str):
         self.lemma = lemma
@@ -197,8 +197,9 @@ class AlternativesBuilder(Builder):
         ]
 
     def prepare(self, *args):
-        # get html, and build a soup object
-        r = requests.get(url=self.WIKTIONARY_ENDPOINT.format(lemma=self.lemma))
+        # make sure you encode it properly.
+        self.url = self.WIKTIONARY_ENDPOINT.format(lemma=quote_plus(self.lemma.replace(" ", "_")))
+        r = requests.get(url=self.url)
         r.raise_for_status()
         self.html = r.text
         self.soup = BeautifulSoup(self.html, 'html.parser')
@@ -221,9 +222,9 @@ class AlternativesBuilder(Builder):
 
     def build_alternatives(self):
         if self.alts_anchors:
-            self.alternatives = [
+            self.alts = [
                 alt_a['title'].strip()
                 for alt_a in self.alts_anchors
             ]
         else:
-            self.alternatives = list()
+            self.alts = list()

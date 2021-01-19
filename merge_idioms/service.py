@@ -20,3 +20,5 @@ def build_idiom_matcher(vocab: Vocab) -> Matcher:
     idiom_matcher_builder = builders.IdiomMatcherBuilder()
     idiom_matcher_builder.construct(vocab)
     return idiom_matcher_builder.idiom_matcher
+
+# TODO: add load_target_idioms
