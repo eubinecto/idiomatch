@@ -2754,3 +2754,5 @@ younger sister,"[[{""LEMMA"": {""REGEX"": ""(?i)^young$""}}, {""LEMMA"": {""REGE
 zero in on,"[[{""LEMMA"": {""REGEX"": ""(?i)^zero$""}}, {""LEMMA"": {""REGEX"": ""(?i)^in$""}}, {""LEMMA"": {""REGEX"": ""(?i)^on$""}}]]"
 zero-day,"[[{""TEXT"": {""REGEX"": ""(?i)^zero$""}}, {""TEXT"": ""-"", ""OP"": ""?""}, {""TEXT"": {""REGEX"": ""(?i)^day$""}}]]"
 come down to earth,"[[{""LEMMA"": {""REGEX"": ""(?i)^come$""}}, {""LEMMA"": {""REGEX"": ""(?i)^down$""}}, {""LEMMA"": {""REGEX"": ""(?i)^to$""}}, {""LEMMA"": {""REGEX"": ""(?i)^earth$""}}]]"
+shoot-em-up,"[[{""TEXT"": {""REGEX"": ""(?i)^shoot$""}}, {""TEXT"": ""-"", ""OP"": ""?""}, {""TEXT"": {""REGEX"": ""(?i)^em$""}}, {""TEXT"": ""-"", ""OP"": ""?""}, {""TEXT"": {""REGEX"": ""(?i)^up$""}}]]"
+beat around the bush,"[[{""LEMMA"": {""REGEX"": ""(?i)^beat$""}}, {""LEMMA"": {""REGEX"": ""(?i)^around$""}}, {""TEXT"": ""the"", ""OP"": ""?""}, {""LEMMA"": {""REGEX"": ""(?i)^bush$""}}]]"

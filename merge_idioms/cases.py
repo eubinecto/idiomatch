@@ -45,4 +45,6 @@ CORRECTION_CASES = {
 MORE_CASES = (
     # need this to avoid overlapping match of "come down to" & "down-to-earth"
     "come down to Earth",
+    "shoot-em-up",  # alternative form of shoot 'em up.
+    "beat around the bush",  # this is frequently used, but not included in Slide.
 )

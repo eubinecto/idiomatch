@@ -129,3 +129,28 @@ class TestMergeIdiomsPipeline(TestCase):
                " any substance annexed to it."
         lemmas = self.get_lemmas(sent)
         self.assertNotIn("pure and simple", lemmas)
+
+    def test_shoot_em_up(self):
+        sent = "I think the advent of video games and third-person shoot 'em up games " \
+               "did more for the zombie genre than a couple movies even."
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("shoot 'em up", lemmas)
+
+    def test_shoot_em_up_alternative(self):
+        # hyphenated form.
+        sent = "I think the advent of video games and third-person shoot-em-up games " \
+               "did more for the zombie genre than a couple movies even."
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("shoot 'em up", lemmas)
+
+    def test_beat_around_the_bush(self):
+        sent = "Just stop beating around the bush and tell me what the problem is!"
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("beat around the bush", lemmas)
+
+    def test_beat_around_the_bush_alternative(self):
+        # around -> about
+        sent = "Just stop beating about the bush and tell me what the problem is!"
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("beat around the bush", lemmas)
+
