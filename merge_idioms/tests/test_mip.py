@@ -1,7 +1,7 @@
 from typing import List, Optional
 from unittest import TestCase
 from spacy import Language
-from merge_idioms import build_mip
+from merge_idioms.service import build_mip
 
 
 class TestMergeIdiomsPipeline(TestCase):
