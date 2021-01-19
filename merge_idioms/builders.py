@@ -1,4 +1,6 @@
 from typing import Generator, List, Callable, Optional
+
+import requests
 from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
 from merge_idioms.config import NLP_MODEL_NAME, MIP_NAME, MIP_VERSION
@@ -6,6 +8,7 @@ from merge_idioms.loaders import TargetIdiomsLoader, IdiomPatternsLoader
 from merge_idioms.cases import PRP_PLACEHOLDER_CASES, PRON_PLACEHOLDER_CASES, OPTIONAL_CASES
 import logging
 from sys import stdout
+from bs4 import BeautifulSoup
 logging.basicConfig(stream=stdout, level=logging.INFO)  # why does logging not work?
 
 
@@ -57,7 +60,7 @@ class IdiomPatternsBuilder(Builder):
                     {"TAG": "PRP$"} if token.text in PRP_PLACEHOLDER_CASES
                     # OP = ? - no occurrence or 1 occurrence
                     # https://spacy.io/usage/rule-based-matching#quantifiers
-                    else {"TEXT": "-", "OP": "?"} if token.text == "-"
+                    else {"TEXT": token.text, "OP": "?"} if token.text == "-"
                     # don't use lemma (this is to avoid false-positives as much as I can)
                     # using regexp for case-insensitive match
                     # https://stackoverflow.com/a/42406605
@@ -140,7 +143,7 @@ class MIPBuilder(Builder):
     def steps(self) -> List[Callable]:
         return [
             self.prepare,
-            self.add_merge_idiom_comp,
+            self.add_components,
             self.update_meta
         ]
 
@@ -148,7 +151,7 @@ class MIPBuilder(Builder):
         # nlp model is the base
         self.mip = load(NLP_MODEL_NAME)
 
-    def add_merge_idiom_comp(self):
+    def add_components(self):
         # make sure the component is added at the end of the pipeline.
         # or, at least after tok2vec & lemmatizer
         self.mip.add_pipe("add_special_cases", first=True)
@@ -159,3 +162,36 @@ class MIPBuilder(Builder):
         # you could later add description here.
         self.mip.meta['name'] += "_" + MIP_NAME
         self.mip.meta['version'] = MIP_VERSION
+
+
+class AlternativesBuilder(Builder):
+
+    WIKTIONARY_ENDPOINT = "https://en.wiktionary.org/wiki/{lemma}"
+
+    def __init__(self):
+        self.lemma: Optional[str] = None
+        self.html: Optional[str] = None
+        self.soup: Optional[BeautifulSoup] = None
+        self.alternatives: Optional[List[str]] = None
+
+    def construct(self, lemma: str):
+        self.lemma = lemma
+        super(AlternativesBuilder, self).construct()
+
+    def steps(self) -> List[Callable]:
+        return [
+            self.prepare,
+            ...,
+            # build alternatives at the end
+            self.build_alternatives
+        ]
+
+    def prepare(self, *args):
+        # get html, and build a soup object
+        r = requests.get(url=self.WIKTIONARY_ENDPOINT.format(lemma=self.lemma))
+        r.raise_for_status()
+        self.html = r.text
+        self.soup = BeautifulSoup(self.html,'html.parser')
+
+    def build_alternatives(self):
+        pass
