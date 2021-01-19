@@ -5,6 +5,10 @@ Just some constants that must be defined manually
 # to be used in components.py - the special cases
 PRP_PLACEHOLDER_CASES = ('one\'s', 'someone\'s')
 PRON_PLACEHOLDER_CASES = ('someone',)
+OPTIONAL_CASES = (
+    ",",  # comma is optional
+    "a", "an", "the"  # articles are optional
+)
 
 # this follows the syntax for spacy's tokenization
 TOKENISATION_CASES = {
@@ -20,6 +24,7 @@ TOKENISATION_CASES = {
 # to be used in loaders.py - the exceptions
 IGNORED_CASES = (
     "if needs be",  # duplicate ->  "if need be" is enough. pattern matching with lemmas will cover this case.
+    "ride the ... train"  # doesn't have a dedicated wikitonary entry.
 )
 
 

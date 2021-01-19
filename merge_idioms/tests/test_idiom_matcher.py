@@ -123,3 +123,9 @@ class TestMergeIdiomsPipeline(TestCase):
                " more than cohabitation is relying on OLD studies. "
         lemmas = self.get_lemmas(sent)
         self.assertIn("this, that, and the other", lemmas)
+
+    def test_and_not_optional(self):
+        sent = "... unable to conceive how a pure simple mind can exist without" \
+               " any substance annexed to it."
+        lemmas = self.get_lemmas(sent)
+        self.assertNotIn("pure and simple", lemmas)

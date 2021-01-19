@@ -3,7 +3,7 @@ from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
 from merge_idioms.config import NLP_MODEL_NAME, MIP_NAME, MIP_VERSION
 from merge_idioms.loaders import TargetIdiomsLoader, IdiomPatternsLoader
-from merge_idioms.cases import PRP_PLACEHOLDER_CASES, PRON_PLACEHOLDER_CASES
+from merge_idioms.cases import PRP_PLACEHOLDER_CASES, PRON_PLACEHOLDER_CASES, OPTIONAL_CASES
 import logging
 from sys import stdout
 logging.basicConfig(stream=stdout, level=logging.INFO)  # why does logging not work?
@@ -67,12 +67,9 @@ class IdiomPatternsBuilder(Builder):
                 patterns = [pattern]
             else:  # non-hyphenated idioms
                 pattern = [
-                    {"TAG": "PRP$"} if token.text in PRP_PLACEHOLDER_CASES
-                    else {"POS": "PRON"} if token.text in PRON_PLACEHOLDER_CASES
-                    # some people may not use comma
-                    else {"TEXT": token.text, "OP": "?"} if token.text == ","  # comma is optional
-                    else {"TEXT": token.text, "OP": "?"} if token.text == "and"  # and is optional
-                    else {"TEXT": token.text, "OP": "?"} if token.text in ("a", "an", "the")  # articles are optional
+                    {"TAG": "PRP$"} if token.text in PRP_PLACEHOLDER_CASES  # one's, someone's
+                    else {"POS": "PRON"} if token.text in PRON_PLACEHOLDER_CASES  # someone.
+                    else {"TEXT": token.text, "OP": "?"} if token.text in OPTIONAL_CASES  # comma is optional
                     else {"LEMMA": {"REGEX": r"(?i)^{}$".format(token.lemma_)}}
                     for token in idiom_doc
                 ]
