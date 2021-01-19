@@ -1,7 +1,7 @@
 import csv
 import json
 from typing import Generator, Dict, List
-from merge_idioms.cases import IGNORED_CASES, CORRECTION_CASES, MORE_CASES
+from merge_idioms.cases import IGNORED_CASES, MORE_CASES
 from merge_idioms.config import TARGET_IDIOMS_TXT_PATH, IDIOM_PATTERNS_JSON_PATH
 
 
@@ -26,11 +26,7 @@ class IdiomsLoader(Loader):
         :param target_only: if set to false, it will load all the idioms.
         :return:
         """
-        to_return = (
-            IdiomsLoader.correct_idiom(idiom)
-            for idiom in self.idioms()
-        )
-
+        to_return = self.idioms()
         if target_only:
             to_return = (
                 idiom
@@ -39,13 +35,8 @@ class IdiomsLoader(Loader):
             )
 
         return (
-            # lower everything but I
-            idiom.lower()
-                 .replace("i ", "I ")
-                 .replace(" i ", " I ")
-                 .replace("i'm", "I'm")
-                 .replace("i'll", "I'll")
-                 .replace("i\'d", "I'd")
+            # case normalisation is done for all idioms
+            self.lower_and_correct(idiom)
             for idiom in to_return
         )
 
@@ -63,12 +54,14 @@ class IdiomsLoader(Loader):
             idioms.append(more_idiom)
         return idioms
 
-    @staticmethod
-    def correct_idiom(idiom: str) -> str:
-        if idiom in CORRECTION_CASES.keys():
-            return CORRECTION_CASES[idiom]
-        else:
-            return idiom
+    @classmethod
+    def lower_and_correct(cls, idiom: str) -> str:
+        return idiom.lower() \
+                    .replace("i ", "I ") \
+                    .replace(" i ", " I ") \
+                    .replace("i'm", "I'm") \
+                    .replace("i'll", "I'll") \
+                    .replace("i\'d", "I'd")
 
     @classmethod
     def is_above_min_len(cls, idiom: str) -> bool:

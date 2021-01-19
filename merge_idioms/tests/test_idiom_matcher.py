@@ -136,21 +136,41 @@ class TestMergeIdiomsPipeline(TestCase):
         lemmas = self.get_lemmas(sent)
         self.assertIn("shoot 'em up", lemmas)
 
-    def test_shoot_em_up_alternative(self):
-        # hyphenated form.
-        sent = "I think the advent of video games and third-person shoot-em-up games " \
-               "did more for the zombie genre than a couple movies even."
-        lemmas = self.get_lemmas(sent)
-        self.assertIn("shoot 'em up", lemmas)
+    def test_shoot_em_up_alts(self):
+        # 1. hyphenated form.
+        sent_1 = "I think the advent of video games and third-person shoot-em-up games " \
+                 "did more for the zombie genre than a couple movies even."
+        # 2. hyphenated with '
+        sent_2 = "I think the advent of video games and third-person shoot-'em-up games " \
+                 "did more for the zombie genre than a couple movies even."
+        # 3. 'em -> them
+        sent_3 = "I think the advent of video games and third-person shoot them up games " \
+                 "did more for the zombie genre than a couple movies even."
+        lemmas_1 = self.get_lemmas(sent_1)
+        lemmas_2 = self.get_lemmas(sent_2)
+        lemmas_3 = self.get_lemmas(sent_3)
+        self.assertIn("shoot 'em up", lemmas_1)
+        self.assertIn("shoot 'em up", lemmas_2)
+        self.assertIn("shoot 'em up", lemmas_3)
 
     def test_beat_around_the_bush(self):
         sent = "Just stop beating around the bush and tell me what the problem is!"
         lemmas = self.get_lemmas(sent)
         self.assertIn("beat around the bush", lemmas)
 
-    def test_beat_around_the_bush_alternative(self):
+    def test_beat_around_the_bush_alt(self):
         # around -> about
         sent = "Just stop beating about the bush and tell me what the problem is!"
         lemmas = self.get_lemmas(sent)
         self.assertIn("beat around the bush", lemmas)
+        
+    def test_have_blood_on_ones_hands(self):
+        sent = "Try running, you'll have blood on your hands."
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("have blood on one's hands", lemmas)
 
+    def test_have_blood_on_ones_hands_alt(self):
+        # have blood -> have one's blood
+        sent = "but I think you'd prefer it than to have Alice's blood on your hands."
+        lemmas = self.get_lemmas(sent)
+        self.assertIn("have blood on one's hands", lemmas)

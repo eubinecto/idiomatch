@@ -1,19 +1,20 @@
 from typing import Optional
 from unittest import TestCase
-from builders import AlternativesBuilder
+from builders import AltsBuilder
 
 
-class TestAlternativesBuilder(TestCase):
-    alts_builder: Optional[AlternativesBuilder] = None
+class TestAltsBuilder(TestCase):
+    alts_builder: Optional[AltsBuilder] = None
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.alts_builder = AlternativesBuilder()
+        cls.alts_builder = AltsBuilder()
 
     def test_when_alts_exist_beat_around_the_bush(self):
         idiom_lemma = "beat around the bush"
+        alt = "beat about the bush"
         self.alts_builder.construct(lemma=idiom_lemma)
-        self.assertIn("beat about the bush", self.alts_builder.alts)
+        self.assertIn(alt, self.alts_builder.alts)
 
     def test_when_alts_exist_catch_em_up(self):
         idiom_lemma = "shoot 'em up"
@@ -21,6 +22,25 @@ class TestAlternativesBuilder(TestCase):
         self.alts_builder.construct(lemma=idiom_lemma)
         for alt in alts.split(","):
             self.assertIn(alt, self.alts_builder.alts)
+
+    def test_when_alts_exist_have_blood_on_ones_hands(self):
+        idiom_lemma = "have blood on one's hands"
+        alt = "have one's blood on one's hands"  # I added this on wiktionary!
+        self.alts_builder.construct(lemma=idiom_lemma)
+        self.assertIn(alt, self.alts_builder.alts)
+
+    # thankfully, they are stated in wiktionary.
+    def test_when_alts_exist_piece_de_resistance(self):
+        idiom_lemma = "pièce de résistance"
+        alt = "piece de resistance"
+        self.alts_builder.construct(lemma=idiom_lemma)
+        self.assertIn(alt, self.alts_builder.alts)
+
+    def test_when_alts_exist_creme_de_la_creme(self):
+        idiom_lemma = "crème de la crème"
+        alt = "creme de la creme"
+        self.alts_builder.construct(lemma=idiom_lemma)
+        self.assertIn(alt, self.alts_builder.alts)
 
     def test_when_alts_do_not_exist_empty_list_go_for_it(self):
         # should be an empty list

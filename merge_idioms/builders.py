@@ -164,7 +164,11 @@ class MIPBuilder(Builder):
         self.mip.meta['version'] = MIP_VERSION
 
 
-class AlternativesBuilder(Builder):
+class AltsBuilder(Builder):
+    """
+    alternatives builder. scrapes the alternatives of the given lemma from
+    wiktionary.
+    """
 
     WIKTIONARY_ENDPOINT = "https://en.wiktionary.org/wiki/{lemma}"
     ALTS_SPAN_ID = "Alternative_forms"
@@ -184,7 +188,7 @@ class AlternativesBuilder(Builder):
 
     def construct(self, lemma: str):
         self.lemma = lemma
-        super(AlternativesBuilder, self).construct()
+        super(AltsBuilder, self).construct()
 
     def steps(self) -> List[Callable]:
         return [
@@ -223,7 +227,7 @@ class AlternativesBuilder(Builder):
     def build_alternatives(self):
         if self.alts_anchors:
             self.alts = [
-                alt_a['title'].strip()
+                alt_a.text.strip()
                 for alt_a in self.alts_anchors
             ]
         else:
