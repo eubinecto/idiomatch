@@ -70,9 +70,9 @@ class IdiomPatternsBuilder(Builder):
                     {"TAG": "PRP$"} if token.text in PRP_PLACEHOLDER_CASES
                     else {"POS": "PRON"} if token.text in PRON_PLACEHOLDER_CASES
                     # some people may not use comma
-                    else {"TEXT": ",", "OP": "?"} if token.text == ","  # comma is optional
-                    else {"TEXT": "and", "OP": "?"} if token.text == "and"  # and is optional
-                    else {"TEXT": {"REGEX": r"^(and|\'n\'|\'n|&)$"}} if token.text == "&"  # for 'n'
+                    else {"TEXT": token.text, "OP": "?"} if token.text == ","  # comma is optional
+                    else {"TEXT": token.text, "OP": "?"} if token.text == "and"  # and is optional
+                    else {"TEXT": token.text, "OP": "?"} if token.text in ("a", "an", "the")  # articles are optional
                     else {"LEMMA": {"REGEX": r"(?i)^{}$".format(token.lemma_)}}
                     for token in idiom_doc
                 ]
