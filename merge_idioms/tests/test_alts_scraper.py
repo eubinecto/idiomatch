@@ -1,6 +1,6 @@
 from typing import Optional
 from unittest import TestCase
-from scrapers import AltsScraper
+from merge_idioms.scrapers import AltsScraper
 
 
 class TestAltsScraper(TestCase):

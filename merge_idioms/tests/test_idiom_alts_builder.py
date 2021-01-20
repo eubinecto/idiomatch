@@ -1,7 +1,7 @@
 from typing import Optional, List, Dict
 from unittest import TestCase
-from builders import IdiomAltsBuilder
-from config import SLIDE_IDIOM_ALTS_TSV
+from merge_idioms.builders import IdiomAltsBuilder
+from merge_idioms.config import SLIDE_IDIOM_ALTS_TSV
 
 
 class TestIdiomAltsScraper(TestCase):

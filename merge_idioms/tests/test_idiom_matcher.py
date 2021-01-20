@@ -3,10 +3,10 @@ Should include tests for the matcher.
 """
 from typing import Optional, List
 from unittest import TestCase
-from config import BASE_NLP_MODEL
 from spacy import load, Language
 from spacy.matcher import Matcher
 from merge_idioms.service import build_idiom_matcher
+from merge_idioms.config import BASE_NLP_MODEL
 
 
 class TestMergeIdiomsPipeline(TestCase):
