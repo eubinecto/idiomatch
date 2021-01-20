@@ -62,7 +62,7 @@ class TestMergeIdiomsPipeline(TestCase):
         # sent_1 = "If she dies, you have the blood on your hands!"
         lemmas_1 = self.get_lemmas(sent_1)
         # so, the problem is, this fails.
-        self.assertIn("have one's blood on one's hands", lemmas_1)
+        self.assertIn("have blood on one's hands", lemmas_1)
 
     def test_greedily_normalize_line_in_the_sand(self):
         sent_1 = "Your line in the sand is not so absolute."

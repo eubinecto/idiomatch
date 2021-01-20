@@ -3,7 +3,7 @@ Should include tests for the matcher.
 """
 from typing import Optional, List
 from unittest import TestCase
-from config import NLP_MODEL_NAME
+from config import BASE_NLP_MODEL
 from spacy import load, Language
 from spacy.matcher import Matcher
 from merge_idioms.service import build_idiom_matcher
@@ -22,14 +22,15 @@ class TestMergeIdiomsPipeline(TestCase):
         """
         # prepare resource, before running any tests below
         # I get some rsrc-related warning. Not sure why.
-        nlp = load(NLP_MODEL_NAME)
+        nlp = load(BASE_NLP_MODEL)
         nlp.add_pipe("add_special_cases", before="tok2vec")
         # set these as the global variables.
         cls.nlp = nlp
         cls.idiom_matcher = build_idiom_matcher(nlp.vocab)
 
     def get_lemmas(self, sent: str) -> List[str]:
-        matches = self.idiom_matcher(self.nlp(sent))
+        doc = self.nlp(sent)
+        matches = self.idiom_matcher(doc)
         return [
             self.idiom_matcher.vocab.strings[lemma_id]
             for (lemma_id, _, _) in matches
@@ -171,6 +172,6 @@ class TestMergeIdiomsPipeline(TestCase):
 
     def test_have_blood_on_ones_hands_alt(self):
         # have blood -> have one's blood
-        sent = "but I think you'd prefer it than to have Alice's blood on your hands."
+        sent = "but I think you'd prefer it than to have her blood on your hands."
         lemmas = self.get_lemmas(sent)
         self.assertIn("have blood on one's hands", lemmas)

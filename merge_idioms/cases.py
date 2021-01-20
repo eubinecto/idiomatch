@@ -19,13 +19,18 @@ TOKENISATION_CASES = {
 
 }
 
+
 # to be used in loaders.py - the exceptions & additions
 IGNORED_CASES = (
+    "Number Ten",  # duplicate ->  Number 10 exists.
     "if needs be",  # duplicate ->  "if need be" is enough. pattern matching with lemmas will cover this case.
-    "ride the ... train"  # doesn't have a dedicated wiktionary entry.
+    "ride the ... train",  # doesn't have a dedicated wiktionary entry.
+    "above and beyond the call of duty",  # the page has been deleted.
+    "be absorbed by",  # this one is also deleted
 )
-MORE_CASES = (
-    # need this to avoid overlapping match of "come down to" & "down-to-earth"
-    "come down to Earth",
-    "beat around the bush",  # this is frequently used, but not included in Slide.
-)
+
+
+MORE_IDIOM_ALTS_CASES = {
+    "have blood on one's hands": ["have one's blood on one's hands"],
+    "come down to Earth": []  # avoid overlapping match between down to, down-to-earth.
+}
