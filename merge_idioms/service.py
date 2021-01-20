@@ -8,8 +8,7 @@ def build_mip() -> Language:
     builds merge-idiom-pipeline. Built on top of
     """
     mip_builder = builders.MIPBuilder()
-    mip_builder.construct()
-    return mip_builder.mip
+    return mip_builder.construct()
 
 
 def build_idiom_matcher(vocab: Vocab) -> Matcher:
@@ -18,5 +17,6 @@ def build_idiom_matcher(vocab: Vocab) -> Matcher:
     the idioms are added to the vocabulary.
     """
     idiom_matcher_builder = builders.IdiomMatcherBuilder()
-    idiom_matcher_builder.construct(vocab)
-    return idiom_matcher_builder.idiom_matcher
+    return idiom_matcher_builder.construct(vocab)
+
+# TODO: add load_target_idioms
