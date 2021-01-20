@@ -1,6 +1,7 @@
 beautifulsoup4==4.9.3
 bleach==3.2.1
 blis==0.7.4
+bs4==0.0.1
 catalogue==2.0.1
 certifi==2020.12.5
 chardet==4.0.0
@@ -8,6 +9,7 @@ click==7.1.2
 colorama==0.4.4
 cymem==2.0.5
 dateparser==1.0.0
+dill==0.3.3
 docutils==0.16
 en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0a0/en_core_web_sm-3.0.0a0.tar.gz
 idna==2.10
@@ -39,6 +41,7 @@ smart-open==3.0.0
 soupsieve==2.1
 spacy-nightly==3.0.0rc2
 srsly==2.3.2
+tabulate==0.8.7
 thinc==8.0.0rc2
 tqdm==4.55.1
 twine==3.3.0

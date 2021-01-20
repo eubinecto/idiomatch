@@ -32,4 +32,3 @@ class TestIdiomAltsScraper(TestCase):
 
     def test_alts_included_have_blood_on_ones_hands(self):
         self.assertIn("have one's blood on one's hands", self.alts)
-

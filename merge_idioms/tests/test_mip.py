@@ -198,4 +198,3 @@ class TestMergeIdiomsPipeline(TestCase):
         sent_1 = "I used to love playing shoot 'em ups at our local arcade growing up."
         lemmas_1 = self.get_lemmas(sent_1)
         self.assertIn("shoot 'em up", lemmas_1)
-

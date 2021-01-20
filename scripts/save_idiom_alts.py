@@ -1,5 +1,4 @@
 import json
-
 from builders import IdiomAltsBuilder
 from config import SLIDE_IDIOM_ALTS_TSV, IDIOM_ALTS_TSV
 import csv
