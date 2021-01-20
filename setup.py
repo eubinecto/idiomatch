@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='merge_idioms',
-    version='0.0.12',
+    version='0.0.13',
     description='spacy pipeline component for merging idioms',
     url='https://github.com/eubinecto/merge-idioms',
     author='Eu-Bin KIM',
@@ -26,6 +26,6 @@ setup(
     },
     # include the patterns and target idioms.
     package_data={
-        'merge_idioms': ['resources/idiom_patterns.json', 'resources/target_idioms.txt']
+        'merge_idioms': ['resources/idiom_patterns.tsv', 'resources/idiom_alts.tsv']
     }
 )
