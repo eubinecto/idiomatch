@@ -2,7 +2,6 @@ from typing import List, Callable, Optional, Dict
 from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
 from spacy.tokens import Doc
-
 from merge_idioms.config import BASE_NLP_MODEL, MIP_NAME, MIP_VERSION, TARGET_IDIOM_MIN_LENGTH, \
     TARGET_IDIOM_MIN_WORD_COUNT
 from merge_idioms.loaders import IdiomPatternsLoader, IdiomAltsLoader, SlideIdiomAltsLoader
@@ -221,8 +220,6 @@ class IdiomAltsBuilder(Builder):
                 self.slide_idiom_alts[idiom] += alts
             else:
                 self.slide_idiom_alts[idiom] = alts
-
-
 
     @staticmethod
     def norm_case(idiom: str) -> str:

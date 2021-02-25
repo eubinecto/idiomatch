@@ -11,7 +11,6 @@ cymem==2.0.5
 dateparser==1.0.0
 dill==0.3.3
 docutils==0.16
-en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0a0/en_core_web_sm-3.0.0a0.tar.gz
 idna==2.10
 Jinja2==2.11.2
 keyring==21.8.0
@@ -24,7 +23,7 @@ packaging==20.8
 pathy==0.3.4
 pkginfo==1.6.1
 preshed==3.0.5
-pydantic==1.6.1
+pydantic==1.7.3
 Pygments==2.7.3
 pyparsing==2.4.7
 python-dateutil==2.8.1
@@ -39,15 +38,16 @@ rfc3986==1.4.0
 six==1.15.0
 smart-open==3.0.0
 soupsieve==2.1
-spacy-nightly==3.0.0rc2
-srsly==2.3.2
+spacy==3.0.1
+spacy-legacy==3.0.1
+srsly==2.4.0
 tabulate==0.8.7
-thinc==8.0.0rc2
+thinc==8.0.1
 tqdm==4.55.1
 twine==3.3.0
 typer==0.3.2
 tzlocal==2.1
 urllib3==1.26.2
-wasabi==0.8.0
+wasabi==0.8.2
 webencodings==0.5.1
 wikitextprocessor==0.4.91

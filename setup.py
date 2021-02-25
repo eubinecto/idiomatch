@@ -14,7 +14,7 @@ setup(
     # https://stackoverflow.com/a/43254082
     packages=find_packages(),
     install_requires=[
-        'spacy-nightly>=3.0.0rc2',
+        'spacy>=3.0.1',  # 3.0 is now officially supported
         'bs4>=0.0.1'
     ],
     entry_points={
