@@ -2,10 +2,10 @@ from typing import List, Callable, Optional, Dict
 from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
 from spacy.tokens import Doc
-from merge_idioms.config import BASE_NLP_MODEL, MIP_NAME, MIP_VERSION, TARGET_IDIOM_MIN_LENGTH, \
+from identify_idioms.config import BASE_NLP_MODEL, MIP_NAME, MIP_VERSION, TARGET_IDIOM_MIN_LENGTH, \
     TARGET_IDIOM_MIN_WORD_COUNT
-from merge_idioms.loaders import IdiomPatternsLoader, IdiomAltsLoader, SlideIdiomAltsLoader
-from merge_idioms.cases import PRP_PLACEHOLDER_CASES, PRON_PLACEHOLDER_CASES, OPTIONAL_CASES, IGNORED_CASES, \
+from identify_idioms.loaders import IdiomPatternsLoader, IdiomAltsLoader, SlideIdiomAltsLoader
+from identify_idioms.cases import PRP_PLACEHOLDER_CASES, PRON_PLACEHOLDER_CASES, OPTIONAL_CASES, IGNORED_CASES, \
     MORE_IDIOM_ALTS_CASES
 import logging
 from sys import stdout
@@ -159,10 +159,10 @@ class IdiomMatcherBuilder(Builder):
                 raise e
 
 
-class MIPBuilder(Builder):
+class IIPBuilder(Builder):
 
     def __init__(self):
-        self.mip: Optional[Language] = None
+        self.iip: Optional[Language] = None
 
     def steps(self) -> List[Callable]:
         return [
@@ -172,24 +172,24 @@ class MIPBuilder(Builder):
         ]
 
     def construct(self, *args) -> Language:
-        super(MIPBuilder, self).construct()
-        return self.mip
+        super(IIPBuilder, self).construct()
+        return self.iip
 
     def prepare(self, *args):
         # nlp model is the base
-        self.mip = load(BASE_NLP_MODEL)
+        self.iip = load(BASE_NLP_MODEL)
 
     def add_components(self):
         # make sure the component is added at the end of the pipeline.
         # or, at least after tok2vec & lemmatizer
-        self.mip.add_pipe("add_special_cases", first=True)
-        self.mip.add_pipe("merge_idioms", last=True)
+        self.iip.add_pipe("add_special_cases", first=True)
+        self.iip.add_pipe("merge_idioms", last=True)
 
     def update_meta(self):
         # can I change the name & version of this pipeline?
         # you could later add description here.
-        self.mip.meta['name'] += "_" + MIP_NAME
-        self.mip.meta['version'] = MIP_VERSION
+        self.iip.meta['name'] += "_" + MIP_NAME
+        self.iip.meta['version'] = MIP_VERSION
 
 
 class IdiomAltsBuilder(Builder):

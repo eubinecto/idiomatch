@@ -1,8 +1,8 @@
-from service import build_mip
+from service import build_iip
 
 
 def main():
-    mip = build_mip()
+    mip = build_iip()
     sent_1 = "qualities attributed to the drug. It is a catch 22 for any trainer or owner."
 
     for token in mip(sent_1):

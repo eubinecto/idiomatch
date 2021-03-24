@@ -3,8 +3,8 @@ from spacy import Language
 from spacy.matcher import Matcher
 from spacy.tokens import Doc, Span, Token
 from spacy.util import filter_spans
-from merge_idioms.builders import IdiomMatcherBuilder
-from merge_idioms.cases import TOKENISATION_CASES
+from identify_idioms.builders import IdiomMatcherBuilder
+from identify_idioms.cases import TOKENISATION_CASES
 
 Span.set_extension("idiom_lemma", default=None, type_cls=str)
 Token.set_extension("is_idiom", default=False, type_cls=bool)
@@ -15,7 +15,6 @@ class MergeIdiomsComponent:
     why define the whole class?
     because It has to maintain a reference to an instance of idiom_matcher.
     """
-
     def __init__(self, nlp: Language, name: str):
         # these..must be json serializable
         self.nlp = nlp
@@ -31,6 +30,7 @@ class MergeIdiomsComponent:
         matches = self.idiom_matcher(doc)
         # longest spans is preferred over short ones.
         # if you keep on having the same errors.. just use this filter helper.
+        # TODO: change this so that you use the spacy's ner tag.
         with doc.retokenize() as retokeniser:
             for span in self.spans_to_merge(doc, matches):
                 retokeniser.merge(

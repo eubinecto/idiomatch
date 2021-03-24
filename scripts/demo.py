@@ -1,8 +1,8 @@
-from service import build_mip
+from service import build_iip
 
 
 def main():
-    mip = build_mip()
+    mip = build_iip()
     # the sentences
     sent_non_comp = "The congress intends to seize power by hook or by crook."
     sent_non_comp_hyphen = "You are down to earth."

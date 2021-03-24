@@ -1,4 +1,4 @@
-# merge-idioms
+# identify-idioms
 
 Implementation of custom Pipeline Component in [SpaCy(3.0)](https://nightly.spacy.io) for merging idioms into stand-alone tokens.
 

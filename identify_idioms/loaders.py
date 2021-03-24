@@ -1,7 +1,7 @@
 import csv
 import json
 from typing import List, Dict
-from merge_idioms.config import IDIOM_PATTERNS_TSV, IDIOM_ALTS_TSV
+from identify_idioms.config import IDIOM_PATTERNS_TSV, IDIOM_ALTS_TSV
 
 
 class Loader:

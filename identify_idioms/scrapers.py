@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup, Tag
 
 
+# experimenting with functional programming in python
 class Failure:
     """
     code reference: https://medium.com/swlh/monads-in-python-e3c9592285d6

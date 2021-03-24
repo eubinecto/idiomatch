@@ -1,14 +1,14 @@
 from spacy import Language, Vocab
 from spacy.matcher import Matcher
-from merge_idioms import builders
+from identify_idioms import builders
 
 
-def build_mip() -> Language:
+def build_iip() -> Language:
     """
-    builds merge-idiom-pipeline. Built on top of
+    builds identify-idiom-pipeline. Built on top of web-core-sm.
     """
-    mip_builder = builders.MIPBuilder()
-    return mip_builder.construct()
+    iip_builder = builders.IIPBuilder()
+    return iip_builder.construct()
 
 
 def build_idiom_matcher(vocab: Vocab) -> Matcher:

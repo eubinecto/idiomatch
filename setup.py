@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='merge_idioms',
-    version='0.0.13',
-    description='spacy pipeline component for merging idioms',
-    url='https://github.com/eubinecto/merge-idioms',
+    name='identify-idioms',
+    version='0.0.14',
+    description='spacy pipeline component for identifying idioms',
+    url='https://github.com/eubinecto/identify-idioms',
     author='Eu-Bin KIM',
     python_requires='>=3.6',
     author_email='tlrndk123@gmail.com',
@@ -20,12 +20,12 @@ setup(
     entry_points={
         'spacy_factories': [
             # factory = [module]:[class]
-            'add_special_cases = merge_idioms.components:AddSpecialCasesComponent',
-            'merge_idioms = merge_idioms.components:MergeIdiomsComponent'
+            'add_special_cases = identify_idioms.components:AddSpecialCasesComponent',
+            'merge_idioms = identify_idioms.components:MergeIdiomsComponent'
          ]
     },
     # include the patterns and target idioms.
     package_data={
-        'merge_idioms': ['resources/idiom_patterns.tsv', 'resources/idiom_alts.tsv']
+        'identify_idioms': ['resources/idiom_patterns.tsv', 'resources/idiom_alts.tsv']
     }
 )

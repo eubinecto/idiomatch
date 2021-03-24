@@ -21,7 +21,7 @@ IDIOM_PATTERNS_TSV = path.join(RESRCS_DIR, "idiom_patterns.tsv")
 IDIOM_ALTS_TSV = path.join(RESRCS_DIR, "idiom_alts.tsv")
 
 # metadata for merge-idiom-pipeline
-MIP_NAME = 'mip'
+MIP_NAME = 'iip'
 MIP_VERSION = "0.0.10"
 
 # spacy - the base model to use.
