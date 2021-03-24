@@ -129,5 +129,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .idea
-data/readme.md
-data/slide/
+data
