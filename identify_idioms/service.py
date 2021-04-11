@@ -1,6 +1,9 @@
+from typing import List
+
 from spacy import Language, Vocab
 from spacy.matcher import Matcher
 from identify_idioms import builders
+from identify_idioms.loaders import IdiomAltsLoader
 
 
 def build_iip() -> Language:
@@ -19,4 +22,10 @@ def build_idiom_matcher(vocab: Vocab) -> Matcher:
     idiom_matcher_builder = builders.IdiomMatcherBuilder()
     return idiom_matcher_builder.construct(vocab)
 
-# TODO: add load_target_idioms
+
+def load_idioms() -> List[str]:
+    idiom2alt = IdiomAltsLoader().load()
+    return [
+        idiom
+        for idiom, _ in idiom2alt.items()
+    ]

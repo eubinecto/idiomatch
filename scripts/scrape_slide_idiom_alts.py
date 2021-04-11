@@ -1,7 +1,7 @@
 import json
 from requests import HTTPError
-from builders import IdiomAltsBuilder
-from loaders import SlideIdiomsLoader
+from identify_idioms.builders import IdiomAltsBuilder
+from identify_idioms.loaders import SlideIdiomsLoader
 from identify_idioms.config import SLIDE_TSV, SLIDE_IDIOM_ALTS_TSV
 import csv
 from os import path
