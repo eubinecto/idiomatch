@@ -24,6 +24,7 @@ def build_idiom_matcher(vocab: Vocab) -> Matcher:
 
 
 def load_idioms() -> List[str]:
+    # TODO: as_key param.
     idiom2alt = IdiomAltsLoader().load()
     return [
         idiom
