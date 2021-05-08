@@ -37,7 +37,7 @@ class TestMergeIdiomsPipeline(TestCase):
         ]
 
     def test_optional_hyphens(self):
-        # balls-out, catch 22
+        # balls-out, balls out
         sent_balls = "in terms of rhyme, meter, and balls-out swagger."
         sent_balls_no_hyphens = "in terms of rhyme, meter, and balls out swagger."
         lemmas_catch = self.lemmatise(sent_balls)
@@ -73,7 +73,6 @@ class TestMergeIdiomsPipeline(TestCase):
         sent_add_fuel_4 = "others in the media have threw gasoline on the fire by blaming farmers"
         # alt 4 - throw gas on the fire
         sent_add_fuel_5 = "others in the media have threw gas on the fire by blaming farmers"
-        matches = self.idiom_matcher(self.nlp(sent_add_fuel_1))
         lemmas_1 = self.lemmatise(sent_add_fuel_1)
         lemmas_2 = self.lemmatise(sent_add_fuel_2)
         lemmas_3 = self.lemmatise(sent_add_fuel_3)

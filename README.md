@@ -15,12 +15,16 @@ python3 spacy -m download en_core_web_sm
 
 ## Quick Start
 ```python
+from identify_idioms.service import build_iip
+
+# examples sentences
 sentences = [
         "You are down to earth.",
         "Have you found your feet on the new job?",
         "To ask our members to accept a pay cut heaps insult on injury."
     ]
-    # build a spacy pipeline for merging idioms, based off of en_core_web_sm model
+
+    # build a spacy pipeline for identifying idioms, based off of en_core_web_sm model
     iip = build_iip()
 
     for sent in sentences:
@@ -56,6 +60,6 @@ filtering: ['add insult to injury']
 ```
 
 ## Supported Idioms
-List of supported idioms with matching patterns can be found in [`identify-idioms/identify_idioms/resources/idiom_patterns.csv`](https://github.com/eubinecto/identify-idioms/blob/main/identify_idioms/resources/idiom_patterns.csv). Total of 2758 idioms are available for
+List of supported idioms with matching patterns can be found in [`identify-idioms/identify_idioms/resources/idiom_patterns.csv`](https://github.com/eubinecto/identify-idioms/blob/main/identify_idioms/resources/idiom_patterns.tsv). Total of 2758 idioms are available for
 matching & merging. These "target idioms" were extracted from a vocabulary of 5000 most 
 frequently used English idioms, which had been made available for open use courtesy of [IBM's SLIDE project](https://developer.ibm.com/exchanges/data/all/sentiment-lexicon-of-idiomatic-expressions/). 
