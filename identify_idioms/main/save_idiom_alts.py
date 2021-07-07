@@ -1,6 +1,6 @@
 import json
 from identify_idioms.builders import IdiomAltsBuilder
-from identify_idioms.config import SLIDE_IDIOM_ALTS_TSV, IDIOM_ALTS_TSV
+from identify_idioms.paths import SLIDE_IDIOM_ALTS_TSV, IDIOM_ALTS_TSV
 import csv
 
 
