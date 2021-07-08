@@ -2,13 +2,25 @@ from typing import List, Callable, Optional, Dict
 from spacy import Language, load, Vocab
 from spacy.matcher import Matcher
 from spacy.tokens import Doc
-from identify_idioms.config import BASE_NLP_MODEL, MIP_NAME, MIP_VERSION, TARGET_IDIOM_MIN_LENGTH, \
+from identify_idioms.configs import\
+    BASE_NLP_MODEL,\
+    MIP_NAME,\
+    MIP_VERSION,\
+    TARGET_IDIOM_MIN_LENGTH, \
     TARGET_IDIOM_MIN_WORD_COUNT
-from identify_idioms.loaders import IdiomPatternsLoader, IdiomAltsLoader, SlideIdiomAltsLoader
-from identify_idioms.cases import PRP_PLACEHOLDER_CASES, PRON_PLACEHOLDER_CASES, OPTIONAL_CASES, IGNORED_CASES, \
+from identify_idioms.loaders import\
+    load_idiom_patterns,\
+    load_idiom_alts,\
+    load_slide_idiom_alts
+from identify_idioms.cases import\
+    PRP_PLACEHOLDER_CASES,\
+    PRON_PLACEHOLDER_CASES,\
+    OPTIONAL_CASES,\
+    IGNORED_CASES, \
     MORE_IDIOM_ALTS_CASES
 import logging
 from sys import stdout
+
 logging.basicConfig(stream=stdout, level=logging.INFO)  # why does logging not work?
 
 
@@ -45,7 +57,7 @@ class IdiomPatternsBuilder(Builder):
 
     def prepare(self, *args):
         self.nlp = load(BASE_NLP_MODEL)
-        self.idiom_alts = IdiomAltsLoader().load()
+        self.idiom_alts = load_idiom_alts()
         self.idiom_patterns = dict()
 
     def add_tok_special_cases(self):
@@ -145,7 +157,7 @@ class IdiomMatcherBuilder(Builder):
     def load_idiom_patterns(self):
         # build the patterns here.
         # well..
-        self.idiom_patterns = IdiomPatternsLoader().load()
+        self.idiom_patterns = load_idiom_patterns()
 
     def add_idiom_patterns(self):
         logger = logging.getLogger("add_idiom_patterns")
@@ -212,7 +224,7 @@ class IdiomAltsBuilder(Builder):
         
     def prepare(self):
         # prepare slide idioms with alternatives
-        self.slide_idiom_alts = SlideIdiomAltsLoader(self.slide_idiom_alts_tsv_path).load()
+        self.slide_idiom_alts = load_slide_idiom_alts()
 
     def add_more_idiom_alts(self):
         for idiom, alts in MORE_IDIOM_ALTS_CASES.items():

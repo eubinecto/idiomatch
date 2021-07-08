@@ -6,7 +6,7 @@ from unittest import TestCase
 from spacy import load, Language
 from spacy.matcher import Matcher
 from identify_idioms.service import build_idiom_matcher
-from identify_idioms.config import BASE_NLP_MODEL
+from identify_idioms.configs import BASE_NLP_MODEL
 
 
 class TestMergeIdiomsPipeline(TestCase):

@@ -3,7 +3,7 @@ import json
 import logging
 from sys import stdout
 from identify_idioms.builders import IdiomPatternsBuilder
-from identify_idioms.config import IDIOM_PATTERNS_TSV
+from identify_idioms.paths import IDIOM_PATTERNS_TSV
 logging.basicConfig(stream=stdout, level=logging.INFO)
 
 
