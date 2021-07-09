@@ -36,7 +36,7 @@ class MergeIdiomsComponent:
                 retokeniser.merge(
                     span,
                     attrs={
-                        'LEMMA': span._.idiom_lemma,
+                        'LEMMA': span._.idiom_lemma.replace(" ", "_"),
                         '_': {
                             # just so we know that they are idioms
                             'is_idiom': True

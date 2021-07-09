@@ -10,10 +10,9 @@ DATA_DIR = path.join(PROJECT_ROOT_DIR, "data")
 SLIDE_DIR = path.join(DATA_DIR, "slide")
 SLIDE_TSV = path.join(SLIDE_DIR, "slide.tsv")
 
-SLIDE_IDIOM_ALTS_TSV = path.join(SLIDE_DIR, 'slide_idiom_alts.tsv')
 # resources needed for the library
 RESRCS_DIR = path.join(LIB_ROOT_DIR, "resources")
 TARGET_IDIOMS_TXT = path.join(RESRCS_DIR, "target_idioms.txt")
 # reduce them to just these two files. They are what goes into resources directory.
 IDIOM_PATTERNS_TSV = path.join(RESRCS_DIR, "idiom_patterns.tsv")
-IDIOM_ALTS_TSV = path.join(RESRCS_DIR, "idiom_alts.tsv")
+IDIOMS_TXT = path.join(RESRCS_DIR, "idioms.txt")

@@ -8,16 +8,14 @@ from identify_idioms.configs import\
     MIP_VERSION,\
     TARGET_IDIOM_MIN_LENGTH, \
     TARGET_IDIOM_MIN_WORD_COUNT
-from identify_idioms.loaders import\
-    load_idiom_patterns,\
-    load_idiom_alts,\
-    load_slide_idiom_alts
-from identify_idioms.cases import\
-    PRP_PLACEHOLDER_CASES,\
-    PRON_PLACEHOLDER_CASES,\
-    OPTIONAL_CASES,\
-    IGNORED_CASES, \
-    MORE_IDIOM_ALTS_CASES
+from identify_idioms.loaders import \
+    load_idiom_patterns, \
+    load_idioms, load_slide_idioms
+from identify_idioms.cases import \
+    PRP_PLACEHOLDER_CASES, \
+    PRON_PLACEHOLDER_CASES, \
+    OPTIONAL_CASES, \
+    IGNORED_CASES, MORE_IDIOM_CASES
 import logging
 from sys import stdout
 
@@ -41,7 +39,7 @@ class IdiomPatternsBuilder(Builder):
 
     def __init__(self):
         self.nlp: Optional[Language] = None
-        self.idiom_alts: Optional[Dict[str, list]] = None
+        self.idioms: Optional[Dict[str, list]] = None
         self.idiom_patterns: Optional[Dict[str, list]] = None  # to build
 
     def construct(self, *args) -> Dict[str, list]:
@@ -57,7 +55,7 @@ class IdiomPatternsBuilder(Builder):
 
     def prepare(self, *args):
         self.nlp = load(BASE_NLP_MODEL)
-        self.idiom_alts = load_idiom_alts()
+        self.idioms = load_idioms()
         self.idiom_patterns = dict()
 
     def add_tok_special_cases(self):
@@ -92,7 +90,7 @@ class IdiomPatternsBuilder(Builder):
 
     def build_idiom_patterns(self):
         # then add idiom matches
-        for idiom, alts in self.idiom_alts.items():
+        for idiom in self.idioms:
             patterns = list()
             idiom_doc = self.nlp(idiom)
             if "-" in idiom:  # hyphenated idioms
@@ -101,15 +99,6 @@ class IdiomPatternsBuilder(Builder):
             else:  # non-hyphenated idioms
                 pattern = self.build_pattern(idiom_doc)
                 patterns.append(pattern)
-            # add patterns for alternatives as well
-            for alt in alts:
-                alt_doc = self.nlp(alt)
-                if "-" in alt:  # hyphenated idioms
-                    pattern = self.build_pattern_hyphenated(alt_doc)
-                    patterns.append(pattern)
-                else:  # non-hyphenated idioms
-                    pattern = self.build_pattern(alt_doc)
-                    patterns.append(pattern)
             self.idiom_patterns.update(
                 {
                     # key = the str rep of idiom
@@ -204,34 +193,25 @@ class IIPBuilder(Builder):
         self.iip.meta['version'] = MIP_VERSION
 
 
-class IdiomAltsBuilder(Builder):
+class IdiomsBuilder(Builder):
     def __init__(self):
-        self.slide_idiom_alts_tsv_path: Optional[str] = None
-        self.slide_idiom_alts: Optional[Dict[str, list]] = None
-        self.idiom_alts: Optional[Dict[str, list]] = None
+        self.slide_idioms: Optional[List[str]] = None
+        self.idioms: Optional[List[str]] = None
 
     def steps(self) -> List[Callable]:
         return [
             self.prepare,
-            self.add_more_idiom_alts,
-            self.build_idiom_alts
+            self.add_more_idiom_cases,
+            self.build_idioms,
         ]
     
-    def construct(self, slide_idiom_alts_tsv_path: str) -> Dict[str, list]:
-        self.slide_idiom_alts_tsv_path = slide_idiom_alts_tsv_path
-        super(IdiomAltsBuilder, self).construct()
-        return self.idiom_alts
+    def construct(self) -> List[str]:
+        super(IdiomsBuilder, self).construct()
+        return self.idioms
         
     def prepare(self):
         # prepare slide idioms with alternatives
-        self.slide_idiom_alts = load_slide_idiom_alts()
-
-    def add_more_idiom_alts(self):
-        for idiom, alts in MORE_IDIOM_ALTS_CASES.items():
-            if idiom in self.slide_idiom_alts:
-                self.slide_idiom_alts[idiom] += alts
-            else:
-                self.slide_idiom_alts[idiom] = alts
+        self.slide_idioms = load_slide_idioms()
 
     @staticmethod
     def norm_case(idiom: str) -> str:
@@ -257,10 +237,15 @@ class IdiomAltsBuilder(Builder):
                and (above_min_word_count(idiom) or
                     above_min_length(idiom) or
                     is_hyphenated(idiom))
-    
-    def build_idiom_alts(self):
-        self.idiom_alts = {
-            self.norm_case(idiom): [self.norm_case(alt) for alt in alts]
-            for idiom, alts in self.slide_idiom_alts.items()
+
+    def add_more_idiom_cases(self):
+        self.slide_idioms += MORE_IDIOM_CASES
+
+    def build_idioms(self):
+        self.idioms = [
+            self.norm_case(idiom)
+            for idiom in self.slide_idioms
             if self.is_target(idiom)
-        }
+        ]
+
+

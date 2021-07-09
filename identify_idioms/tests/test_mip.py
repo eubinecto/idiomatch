@@ -52,50 +52,50 @@ class TestMergeIdiomsPipeline(TestCase):
         lemmas_1 = self.get_lemmas(sent_1)
         lemmas_2 = self.get_lemmas(sent_2)
         lemmas_3 = self.get_lemmas(sent_3)
-        self.assertIn("on one's hands", lemmas_1)
-        self.assertIn("on one's hands", lemmas_2)
-        self.assertIn("on one's hands", lemmas_3)
+        self.assertIn("on_one's_hands", lemmas_1)
+        self.assertIn("on_one's_hands", lemmas_2)
+        self.assertIn("on_one's_hands", lemmas_3)
 
     def test_greedily_normalize_have_ones_blood_on_ones_hands(self):
-        sent_1 = "If she dies, you have her blood on your hands!"
+        sent_1 = "If she dies, you have blood on your hands!"
         # later... you have to test for this. should include the case of having the in place of one's
         # sent_1 = "If she dies, you have the blood on your hands!"
         lemmas_1 = self.get_lemmas(sent_1)
         # so, the problem is, this fails.
-        self.assertIn("have blood on one's hands", lemmas_1)
+        self.assertIn("have_blood_on_one's_hands", lemmas_1)
 
     def test_greedily_normalize_line_in_the_sand(self):
         sent_1 = "Your line in the sand is not so absolute."
         lemmas_1 = self.get_lemmas(sent_1)
-        self.assertIn("line in the sand", lemmas_1)
+        self.assertIn("line_in_the_sand", lemmas_1)
 
     def test_greedily_normalize_draw_a_line_in_the_sand(self):
         sent_1 = " but there comes a time when one has to draw a line in the sand."
         lemmas_1 = self.get_lemmas(sent_1)
-        self.assertIn("draw a line in the sand", lemmas_1)
+        self.assertIn("draw_a_line_in_the_sand", lemmas_1)
 
     def test_greedily_normalize_draw_a_line(self):
         sent_1 = "I had to draw a line somewhere, so I took all the kickers that have made at least"
         lemmas_1 = self.get_lemmas(sent_1)
-        self.assertIn("draw a line", lemmas_1)
+        self.assertIn("draw_a_line", lemmas_1)
 
     def test_greedily_normalize_end_of_the_world(self):
         sent_1 = "This brings me to Disney. Is it the end of the world that they have bought a profitable and " \
                  "still culturally relevant movie"
         lemmas_1 = self.get_lemmas(sent_1)
-        self.assertIn("end of the world", lemmas_1)
+        self.assertIn("end_of_the_world", lemmas_1)
 
     def test_greedily_normalize_not_the_end_of_the_world(self):
         sent_1 = "default like it does if you add a new program, " \
                  "but its not the end of the world."
         lemmas_1 = self.get_lemmas(sent_1)
-        self.assertIn("not the end of the world", lemmas_1)
+        self.assertIn("not_the_end_of_the_world", lemmas_1)
 
     def test_greedily_normalise_somewhere_along_the_line(self):
         sent_1 = "But somewhere along the line the bold and ethical vision of building cities " \
                  "in the skies has been lost and confused."
         lemmas_1 = self.get_lemmas(sent_1)
-        self.assertIn("somewhere along the line", lemmas_1)
+        self.assertIn("somewhere_along_the_line", lemmas_1)
 
     def test_lemma_ids_are_preserved_for_non_idioms(self):
         sent_1 = "I've got too much on my hands to help."
@@ -119,9 +119,9 @@ class TestMergeIdiomsPipeline(TestCase):
         lemma_ids_2 = self.get_lemma_ids(sent_2)
         lemma_ids_3 = self.get_lemma_ids(sent_3)
 
-        lemma_id_1 = self.mip.vocab.strings["on one's hands"]
-        lemma_id_2 = self.mip.vocab.strings["not the end of the world"]
-        lemma_id_3 = self.mip.vocab.strings["draw a line in the sand"]
+        lemma_id_1 = self.mip.vocab.strings["on_one's_hands"]
+        lemma_id_2 = self.mip.vocab.strings["not_the_end_of_the_world"]
+        lemma_id_3 = self.mip.vocab.strings["draw_a_line_in_the_sand"]
 
         self.assertIn(lemma_id_1, lemma_ids_1)
         self.assertIn(lemma_id_2, lemma_ids_2)
@@ -134,8 +134,8 @@ class TestMergeIdiomsPipeline(TestCase):
         # sent_1 = "If she dies, you have the blood on your hands!"
         lemmas_1 = self.get_lemmas(sent_1)
         # so, the problem is, this fails.
-        self.assertIn("at the end of the day", lemmas_1)
-        self.assertIn("go for it", lemmas_1)
+        self.assertIn("at_the_end_of_the_day", lemmas_1)
+        self.assertIn("go_for_it", lemmas_1)
 
     def test_two_idioms_in_one_sent_custom_property(self):
         # at the end of the day, go for it.
@@ -144,15 +144,15 @@ class TestMergeIdiomsPipeline(TestCase):
         # sent_1 = "If she dies, you have the blood on your hands!"
         lemmas_1 = self.get_lemmas(sent_1)
         # so, the problem is, this fails.
-        self.assertIn("at the end of the day", lemmas_1)
-        self.assertIn("on one's hands", lemmas_1)
+        self.assertIn("at_the_end_of_the_day", lemmas_1)
+        self.assertIn("on_one's_hands", lemmas_1)
 
     def test_overlapping_match(self):
         # come down to vs. down-to-earth
         sent_1 = "Gosh, I must say perhaps we should um, sort of come down to Earth" \
                  " and sample some of this delightful food."
         lemmas_1 = self.get_lemmas(sent_1)
-        self.assertIn("come down to earth", lemmas_1)
+        self.assertIn("come_down_to_earth", lemmas_1)
 
     def test_custom_attr_is_idiom(self):
         sent_1 = "At the end of the day, your fate is on your hands."
@@ -161,20 +161,20 @@ class TestMergeIdiomsPipeline(TestCase):
             for token in self.mip(sent_1)
             if token._.is_idiom  # this is the custom attribute
         ]
-        self.assertIn("at the end of the day", idiom_lemmas)
-        self.assertIn("on one's hands", idiom_lemmas)
+        self.assertIn("at_the_end_of_the_day", idiom_lemmas)
+        self.assertIn("on_one's_hands", idiom_lemmas)
         self.assertTrue(len(idiom_lemmas) == 2)
 
     def test_replace_someone_with_noun(self):
         sent = "they were teaching me a lesson for daring to complain."
         # get posses
         lemmas = self.get_lemmas(sent)
-        self.assertIn("teach someone a lesson", lemmas)
+        self.assertIn("teach_someone_a_lesson", lemmas)
 
     def test_I_ll_be_damned(self):
         sent = "I'll be damned! Our team actually won!"
         lemmas = self.get_lemmas(sent)
-        self.assertIn("I'll be damned", lemmas)
+        self.assertIn("I'll_be_damned", lemmas)
 
     def test_she_ll_be_right(self):
         pass
@@ -197,4 +197,4 @@ class TestMergeIdiomsPipeline(TestCase):
     def test_shoot_em_up(self):
         sent_1 = "I used to love playing shoot 'em ups at our local arcade growing up."
         lemmas_1 = self.get_lemmas(sent_1)
-        self.assertIn("shoot 'em up", lemmas_1)
+        self.assertIn("shoot_'em_up", lemmas_1)
