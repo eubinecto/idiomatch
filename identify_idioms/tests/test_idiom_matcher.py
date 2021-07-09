@@ -62,28 +62,6 @@ class TestMergeIdiomsPipeline(TestCase):
         self.assertIn("teach someone a lesson", lemmas_teach)
         self.assertIn("ahead of one's time", lemmas_ahead)
 
-    def test_alternatives(self):
-        # lemma - add fuel to the fire
-        sent_add_fuel_1 = "others in the media have added fuel to the fire by blaming farmers"
-        # alt 1 - add fuel to the flame
-        sent_add_fuel_2 = "others in the media have added fuel to the flame by blaming farmers"
-        # alt 2 - pour gasoline on the fire
-        sent_add_fuel_3 = "others in the media have poured gasoline on the fire by blaming farmers"
-        # alt 3 - throw gasoline on the fire
-        sent_add_fuel_4 = "others in the media have threw gasoline on the fire by blaming farmers"
-        # alt 4 - throw gas on the fire
-        sent_add_fuel_5 = "others in the media have threw gas on the fire by blaming farmers"
-        lemmas_1 = self.lemmatise(sent_add_fuel_1)
-        lemmas_2 = self.lemmatise(sent_add_fuel_2)
-        lemmas_3 = self.lemmatise(sent_add_fuel_3)
-        lemmas_4 = self.lemmatise(sent_add_fuel_4)
-        lemmas_5 = self.lemmatise(sent_add_fuel_5)
-        self.assertIn("add fuel to the fire", lemmas_1)
-        self.assertIn("add fuel to the fire", lemmas_2)
-        self.assertIn("add fuel to the fire", lemmas_3)
-        self.assertIn("add fuel to the fire", lemmas_4)
-        self.assertIn("add fuel to the fire", lemmas_5)
-
     # rigorously testing for hyphenated terms.
     def test_match_catch_22(self):
         # TODO: This does not pass.
@@ -186,41 +164,12 @@ class TestMergeIdiomsPipeline(TestCase):
         lemmas = self.lemmatise(sent)
         self.assertIn("shoot 'em up", lemmas)
 
-    def test_shoot_em_up_alts(self):
-        # 1. hyphenated form.
-        sent_1 = "I think the advent of video games and third-person shoot-em-up games " \
-                 "did more for the zombie genre than a couple movies even."
-        # 2. hyphenated with '
-        sent_2 = "I think the advent of video games and third-person shoot-'em-up games " \
-                 "did more for the zombie genre than a couple movies even."
-        # 3. 'em -> them
-        sent_3 = "I think the advent of video games and third-person shoot them up games " \
-                 "did more for the zombie genre than a couple movies even."
-        lemmas_1 = self.lemmatise(sent_1)
-        lemmas_2 = self.lemmatise(sent_2)
-        lemmas_3 = self.lemmatise(sent_3)
-        self.assertIn("shoot 'em up", lemmas_1)
-        self.assertIn("shoot 'em up", lemmas_2)
-        self.assertIn("shoot 'em up", lemmas_3)
-
     def test_beat_around_the_bush(self):
         sent = "Just stop beating around the bush and tell me what the problem is!"
         lemmas = self.lemmatise(sent)
         self.assertIn("beat around the bush", lemmas)
 
-    def test_beat_around_the_bush_alt(self):
-        # around -> about
-        sent = "Just stop beating about the bush and tell me what the problem is!"
-        lemmas = self.lemmatise(sent)
-        self.assertIn("beat around the bush", lemmas)
-        
     def test_have_blood_on_ones_hands(self):
         sent = "Try running, you'll have blood on your hands."
-        lemmas = self.lemmatise(sent)
-        self.assertIn("have blood on one's hands", lemmas)
-
-    def test_have_blood_on_ones_hands_alt(self):
-        # have blood -> have one's blood
-        sent = "but I think you'd prefer it than to have her blood on your hands."
         lemmas = self.lemmatise(sent)
         self.assertIn("have blood on one's hands", lemmas)

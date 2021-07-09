@@ -26,6 +26,6 @@ setup(
     },
     # include the patterns and target idioms.
     package_data={
-        'identify_idioms': ['resources/idiom_patterns.tsv', 'resources/idiom_alts.tsv']
+        'identify_idioms': ['resources/idiom_patterns.tsv', 'resources/idioms.tsv']
     }
 )
