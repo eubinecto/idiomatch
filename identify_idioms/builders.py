@@ -9,7 +9,8 @@ from identify_idioms.configs import \
     MIP_NAME, \
     MIP_VERSION, \
     TARGET_IDIOM_MIN_LENGTH, \
-    TARGET_IDIOM_MIN_WORD_COUNT
+    TARGET_IDIOM_MIN_WORD_COUNT, \
+    N
 from identify_idioms.loaders import \
     load_idiom_patterns, \
     load_idioms, load_slide_idioms
@@ -17,7 +18,7 @@ from identify_idioms.cases import \
     PRP_PLACEHOLDER_CASES, \
     PRON_PLACEHOLDER_CASES, \
     OPTIONAL_CASES, \
-    IGNORED_CASES, MORE_IDIOM_CASES
+    IGNORED_CASES, MORE_IDIOM_CASES, PLACEHOLDER_CASES
 import logging
 from sys import stdout
 
@@ -85,10 +86,15 @@ class IdiomPatternsBuilder(Builder):
             is_first = False
         return res
 
+    @classmethod
+    def build_modification(cls, idiom_doc: Doc) -> List[dict]:
+        patterns = cls.build_pattern(idiom_doc)
+        return cls.insert_slop(patterns, N)
+
     @staticmethod
     def build_pattern_hyphenated(hyphenated_idiom_doc: Doc) -> List[dict]:
         return [
-            {"TAG": "PRP$"} if token.text in PRP_PLACEHOLDER_CASES
+            {"REGEXP": r"*"} if token.text in PLACEHOLDER_CASES  # one's, someone's, someone.
             # OP = ? - no occurrence or 1 occurrence
             # https://spacy.io/usage/rule-based-matching#quantifiers
             else {"TEXT": token.text, "OP": "?"} if token.text == "-"
@@ -100,22 +106,14 @@ class IdiomPatternsBuilder(Builder):
         ]  # include hyphens
 
     @staticmethod
-    def build_pattern(cls, idiom_doc: Doc) -> List[dict]:
+    def build_pattern(idiom_doc: Doc) -> List[dict]:
         return [
-            {"TAG": "PRP$"} if token.text in PRP_PLACEHOLDER_CASES  # one's, someone's
-            else {"POS": "PRON"} if token.text in PRON_PLACEHOLDER_CASES  # someone.
+            # use a wildcard for placeholder cases.
+            {"REGEXP": r"*"} if token.text in PLACEHOLDER_CASES  # one's, someone's, someone.
             else {"TEXT": token.text, "OP": "?"} if token.text in OPTIONAL_CASES  # comma is optional
             else {"LEMMA": {"REGEX": r"(?i)^{}$".format(token.lemma_)}}
             for token in idiom_doc
         ]
-
-    @staticmethod
-    def build_modification():
-        pass
-
-    @staticmethod
-    def build_openslot():
-        pass
 
     @staticmethod
     def build_passivisation_with_modification():
