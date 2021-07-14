@@ -20,7 +20,6 @@ setup(
     entry_points={
         'spacy_factories': [
             # factory = [module]:[class]
-            'add_special_cases = identify_idioms.components:AddSpecialCasesComponent',
             'merge_idioms = identify_idioms.components:MergeIdiomsComponent'
          ]
     },

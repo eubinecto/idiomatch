@@ -102,7 +102,7 @@ class TestMergeIdiomsPipeline(TestCase):
         too_lemma_id = self.mip.vocab.strings["too"]
         much_lemma_id = self.mip.vocab.strings["much"]
         # # okay. so string_store.__getitem()__ accepts both string and hash code.
-        # too_lemma = self.iip.vocab.strings[too_lemma_id]
+        # too_lemma = self.nlp.vocab.strings[too_lemma_id]
         # self.assertEqual(too_lemma, "too")
         lemma_ids = self.get_lemma_ids(sent_1)
         self.assertIn(too_lemma_id, lemma_ids)

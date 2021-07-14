@@ -9,8 +9,7 @@ from identify_idioms.service import build_idiom_matcher
 from identify_idioms.configs import BASE_NLP_MODEL
 
 
-class TestMergeIdiomsPipeline(TestCase):
-    pass
+class TestIdiomMatcher(TestCase):
 
     nlp: Optional[Language] = None
     idiom_matcher: Optional[Matcher] = None
@@ -22,8 +21,8 @@ class TestMergeIdiomsPipeline(TestCase):
         """
         # prepare resource, before running any tests below
         # I get some rsrc-related warning. Not sure why.
+        # first, save the idiom patterns.
         nlp = load(BASE_NLP_MODEL)
-        nlp.add_pipe("add_special_cases", before="tok2vec")
         # set these as the global variables.
         cls.nlp = nlp
         cls.idiom_matcher = build_idiom_matcher(nlp.vocab)

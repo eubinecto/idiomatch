@@ -4,7 +4,6 @@ from spacy.matcher import Matcher
 from spacy.tokens import Doc, Span, Token
 from spacy.util import filter_spans
 from identify_idioms.builders import IdiomMatcherBuilder
-from identify_idioms.cases import TOKENISATION_CASES
 
 Span.set_extension("idiom_lemma", default=None, type_cls=str)
 Token.set_extension("is_idiom", default=False, type_cls=bool)
@@ -62,24 +61,6 @@ class MergeIdiomsComponent:
         return idiom_matcher_builder.idiom_matcher
 
 
-class AddSpecialCasesComponent:
-
-    def __init__(self, nlp: Language, name: str):
-        self.nlp = nlp
-        self.name = name
-
-    def __call__(self, doc: Doc) -> Doc:
-        self.add_tok_cases()
-        # just pass the doc.
-        # all you want to do is adding the special cases
-        return doc
-
-    def add_tok_cases(self):
-        # add cases for place holders
-        for term, case in TOKENISATION_CASES.items():
-            self.nlp.tokenizer.add_special_case(term, case)
-
-
 # factory method for the component
 @Language.factory(
     name="merge_idioms",
@@ -87,11 +68,3 @@ class AddSpecialCasesComponent:
 )
 def create_merge_idiom_component(nlp: Language, name: str) -> MergeIdiomsComponent:
     return MergeIdiomsComponent(nlp, name)
-
-
-@Language.factory(
-    name="add_special_cases",
-    retokenizes=False,
-)
-def create_add_special_cases_component(nlp: Language, name: str) -> AddSpecialCasesComponent:
-    return AddSpecialCasesComponent(nlp, name)

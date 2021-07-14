@@ -1,5 +1,5 @@
 # metadata for merge-idiom-pipeline
-MIP_NAME = 'iip'
+MIP_NAME = 'nlp'
 MIP_VERSION = "0.0.10"
 
 # spacy - the base model to use.
@@ -10,4 +10,4 @@ TARGET_IDIOM_MIN_LENGTH = 14
 TARGET_IDIOM_MIN_WORD_COUNT = 3
 
 # slop config
-N = 4
+SLOP = 5
