@@ -1,23 +1,55 @@
 from unittest import TestCase
 from spacy.matcher import Matcher
-from identify_idioms.builders import IdiomPatternsBuilder, NLPBasedBuilder
+from identify_idioms.builders import IdiomPatternsBuilder, NLPBasedBuilder, IdiomsBuilder
 from identify_idioms.configs import SLOP
+
+
+class TestIdiomsBuilder(TestCase):
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.idioms_builder = IdiomsBuilder()
+        cls.idioms = cls.idioms_builder.construct()
+
+    def test_hyphenated_term_included_catch_22(self):
+        self.assertIn("catch-22", self.idioms)
+
+    def test_hyphenated_term_included_balls_out(self):
+        self.assertIn("balls-out", self.idioms)
 
 
 class TestNLPBasedBuilder(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.builder = NLPBasedBuilder()
+        builder = NLPBasedBuilder()
+        builder.add_special_tok_cases()
+        cls.nlp = builder.nlp
 
-    def test_add_special_cases(self):
-        self.builder.add_special_cases()
-        sent = "call someone's bluff"
-        lemmas = [
-            token.lemma_
-            for token in self.builder.nlp(sent)
+    def test_add_special_tok_cases_prp(self):
+        idiom_1 = "call someone's bluff"
+        idiom_2 = "ahead of one's time"
+        texts_1 = [
+            token.text
+            for token in self.nlp(idiom_1)
+        ]
+        texts_2 = [
+            token.text
+            for token in self.nlp(idiom_2)
         ]
         # so... this passes.
-        self.assertIn("someone's", lemmas)
+        self.assertIn("someone's", texts_1)
+        self.assertIn("one's", texts_2)
+
+    def test_add_special_tok_cases_num(self):
+        idiom = "catch-22"
+        texts = [
+            token.text
+            for token in self.nlp(idiom)
+        ]
+        # so... this passes.
+        self.assertIn("catch", texts)
+        self.assertIn("-", texts)
+        self.assertIn("22", texts)
 
 
 class TestIdiomPatternsBuilder(TestCase):
@@ -30,16 +62,16 @@ class TestIdiomPatternsBuilder(TestCase):
         builder = NLPBasedBuilder()
         builder.construct()  # for adding special cases.
         cls.nlp = builder.nlp
-        cls.matcher = Matcher(cls.nlp.vocab)
 
     def test_insert_slop(self):
         # what should this be able to match?
         pattern = [{"LOWER": "hello"}, {"LOWER": "world"}]
         pattern = IdiomPatternsBuilder.insert_slop(pattern, SLOP)
         lemma = "HelloWorld"
-        self.matcher.add(lemma, [pattern])
+        matcher = Matcher(self.nlp.vocab)
+        matcher.add(lemma, [pattern])
         doc = self.nlp("Hello, my precious world!")  # 3 tokens in between the two words.
-        matches = self.matcher(doc)
+        matches = matcher(doc)
         strings = [
             self.nlp.vocab.strings[match_id]
             for match_id, _, _ in matches
@@ -59,10 +91,11 @@ class TestIdiomPatternsBuilder(TestCase):
         idiom_doc = self.nlp(lemma)
         idiom_tokens = [token for token in idiom_doc]
         pattern = IdiomPatternsBuilder.build_modification(idiom_tokens)
-        self.matcher.add(lemma, [pattern])
+        matcher = Matcher(self.nlp.vocab)
+        matcher.add(lemma, [pattern])
         # modification.
         doc = self.nlp("He called my blatant bluff")
-        matches = self.matcher(doc)
+        matches = matcher(doc)
         strings = [
             self.nlp.vocab.strings[match_id]
             for match_id, _, _ in matches
@@ -74,10 +107,75 @@ class TestIdiomPatternsBuilder(TestCase):
         idiom_doc = self.nlp(lemma)
         idiom_tokens = [token for token in idiom_doc]
         pattern = IdiomPatternsBuilder.build_openslot(idiom_tokens)
-        self.matcher.add(lemma, [pattern])
+        matcher = Matcher(self.nlp.vocab)
+        matcher.add(lemma, [pattern])
         # modification.
         doc = self.nlp("keeping German and France at arm's length")
-        matches = self.matcher(doc)
+        matches = matcher(doc)
+        strings = [
+            self.nlp.vocab.strings[match_id]
+            for match_id, _, _ in matches
+        ]
+        self.assertIn(lemma, strings)
+
+    def test_build_hyphenated(self):
+        lemma = "balls-out"
+        idiom_doc = self.nlp(lemma)
+        idiom_tokens = [token for token in idiom_doc]
+        pattern = IdiomPatternsBuilder.build_hyphenated(idiom_tokens)
+        matcher = Matcher(self.nlp.vocab)
+        matcher.add(lemma, [pattern])
+        # modification.
+        doc = self.nlp("That was one balls-out street race!")
+        matches = matcher(doc)
+        strings = [
+            self.nlp.vocab.strings[match_id]
+            for match_id, _, _ in matches
+        ]
+        self.assertIn(lemma, strings)
+
+    def test_build_hyphenated_catch_22(self):
+        lemma = "catch-22"
+        idiom_doc = self.nlp(lemma)
+        idiom_tokens = [token for token in idiom_doc]
+        pattern = IdiomPatternsBuilder.build_hyphenated(idiom_tokens)
+        matcher = Matcher(self.nlp.vocab)
+        matcher.add(lemma, [pattern])
+        # modification.
+        doc = self.nlp("This is a catch-22 situation")
+        matches = matcher(doc)
+        strings = [
+            self.nlp.vocab.strings[match_id]
+            for match_id, _, _ in matches
+        ]
+        self.assertIn(lemma, strings)
+
+    def test_build_hyphenated_catch_22_no_hyphen(self):
+        lemma = "catch-22"
+        idiom_doc = self.nlp(lemma)
+        idiom_tokens = [token for token in idiom_doc]
+        pattern = IdiomPatternsBuilder.build_hyphenated(idiom_tokens)
+        matcher = Matcher(self.nlp.vocab)
+        matcher.add(lemma, [pattern])
+        # modification.
+        doc = self.nlp("This is a catch 22 situation")
+        matches = matcher(doc)
+        strings = [
+            self.nlp.vocab.strings[match_id]
+            for match_id, _, _ in matches
+        ]
+        self.assertIn(lemma, strings)
+
+    def test_build_hyphenated_catch_22_no_hyphen_capitalised(self):
+        lemma = "catch-22"
+        idiom_doc = self.nlp(lemma)
+        idiom_tokens = [token for token in idiom_doc]
+        pattern = IdiomPatternsBuilder.build_hyphenated(idiom_tokens)
+        matcher = Matcher(self.nlp.vocab)
+        matcher.add(lemma, [pattern])
+        # modification.
+        doc = self.nlp("This is a Catch 22 situation")
+        matches = matcher(doc)
         strings = [
             self.nlp.vocab.strings[match_id]
             for match_id, _, _ in matches
@@ -89,10 +187,11 @@ class TestIdiomPatternsBuilder(TestCase):
         idiom_doc = self.nlp(lemma)
         idiom_tokens = [token for token in idiom_doc]
         pattern = IdiomPatternsBuilder.build_passivisation_with_modification(idiom_tokens)
-        self.matcher.add(lemma, [pattern])
+        matcher = Matcher(self.nlp.vocab)
+        matcher.add(lemma, [pattern])
         # modification.
         doc = self.nlp("the massive floodgates were finally opened")
-        matches = self.matcher(doc)
+        matches = matcher(doc)
         strings = [
             self.nlp.vocab.strings[match_id]
             for match_id, _, _ in matches
@@ -104,9 +203,10 @@ class TestIdiomPatternsBuilder(TestCase):
         idiom_doc = self.nlp(lemma)
         idiom_tokens = [token for token in idiom_doc]
         pattern = IdiomPatternsBuilder.build_passivisation_with_modification(idiom_tokens)
-        self.matcher.add(lemma, [pattern])
+        matcher = Matcher(self.nlp.vocab)
+        matcher.add(lemma, [pattern])
         doc = self.nlp("my bluff was embarrassingly called by her.")
-        matches = self.matcher(doc)
+        matches = matcher(doc)
         strings = [
             self.nlp.vocab.strings[match_id]
             for match_id, _, _ in matches

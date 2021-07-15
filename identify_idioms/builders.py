@@ -5,11 +5,11 @@ from spacy.tokens import Token
 from tqdm import tqdm
 from identify_idioms.configs import \
     BASE_NLP_MODEL, \
-    MIP_NAME, \
-    MIP_VERSION, \
+    IIP_NAME, \
+    IIP_VERSION, \
     TARGET_IDIOM_MIN_LENGTH, \
     TARGET_IDIOM_MIN_WORD_COUNT, \
-    SLOP
+    SLOP, WILDCARD
 from identify_idioms.loaders import \
     load_idiom_patterns, \
     load_idioms, load_slide_idioms
@@ -17,7 +17,7 @@ from identify_idioms.cases import \
     IGNORED_CASES, \
     MORE_IDIOM_CASES, \
     PRP_PLACEHOLDER_CASES, \
-    PRON_PLACEHOLDER_CASES, TOKENISATION_CASES, OPTIONAL_CASES
+    PRON_PLACEHOLDER_CASES, SPECIAL_TOK_CASES, OPTIONAL_CASES
 import logging
 from sys import stdout
 
@@ -74,9 +74,8 @@ class IdiomMatcherBuilder(Builder):
         self.idiom_patterns = load_idiom_patterns()
 
     def add_idiom_patterns(self):
-        logger = logging.getLogger("add_idiom_patterns")
-        logger.info("adding patterns into idiom_matcher...")
-        for idiom, patterns in tqdm(self.idiom_patterns.items()):
+        for idiom, patterns in tqdm(self.idiom_patterns.items(),
+                                    desc="adding patterns into idiom_matcher..."):
             try:
                 self.idiom_matcher.add(idiom, patterns)
             except Exception as e:
@@ -148,16 +147,15 @@ class NLPBasedBuilder(Builder):
 
     def steps(self) -> List[Callable]:
         return [
-            self.add_special_cases
+            self.add_special_tok_cases
         ]
 
-    def add_special_cases(self):
-        for term, case in TOKENISATION_CASES.items():
+    def add_special_tok_cases(self):
+        for term, case in SPECIAL_TOK_CASES.items():
             self.nlp.tokenizer.add_special_case(term, case)
 
 
 class IdiomPatternsBuilder(NLPBasedBuilder):
-    WILDCARD: str = r"[a-zA-Z0-9,\-\'\"]+"
 
     def __init__(self):
         super().__init__()
@@ -174,13 +172,13 @@ class IdiomPatternsBuilder(NLPBasedBuilder):
             self.build_patterns
         ]
 
-    @classmethod
-    def insert_slop(cls, patterns: List[dict], n: int) -> List[dict]:
+    @staticmethod
+    def insert_slop(patterns: List[dict], n: int) -> List[dict]:
         """
         getting use of implementation of intersperse, implemented in here.
         https://stackoverflow.com/a/5655780
         """
-        slop_pattern = [{"TEXT": {"REGEX": cls.WILDCARD}, "OP": "?"}] * n  # insert n number of slops.
+        slop_pattern = [{"TEXT": {"REGEX": WILDCARD}, "OP": "?"}] * n  # insert n number of slops.
         res = list()
         is_first = True
         for pattern in patterns:
@@ -218,13 +216,26 @@ class IdiomPatternsBuilder(NLPBasedBuilder):
         return cls.insert_slop(pattern, SLOP)
 
     @classmethod
+    def build_hyphenated(cls, idiom_tokens: List[Token]) -> List[dict]:
+        pattern = [
+            {"TEXT": token.text, "OP": "?"} if token.text == "-"
+            # don't use lemma (this is to avoid false-positives as much as I can)
+            # using regexp for case-insensitive match
+            # https://stackoverflow.com/a/42406605
+            else {"TEXT": {"REGEX": r"(?i)^{}$".format(token.text)}}
+            for token in idiom_tokens
+        ]
+        # no openslot here.
+        return pattern
+
+    @classmethod
     def build_openslot(cls, idiom_tokens: List[Token]) -> List[dict]:
         """
         wildcard + slop
         """
         pattern = [
             # use a wildcard for placeholder cases.
-            {"TEXT": {"REGEX": cls.WILDCARD}} if token.text in (PRP_PLACEHOLDER_CASES + PRON_PLACEHOLDER_CASES)
+            {"TEXT": {"REGEX": WILDCARD}} if token.text in (PRP_PLACEHOLDER_CASES + PRON_PLACEHOLDER_CASES)
             else {"TEXT": token.text, "OP": "?"} if token.text in OPTIONAL_CASES
             else {"LEMMA": {"REGEX": r"(?i)^{}$".format(token.lemma_)}}
             for token in idiom_tokens
@@ -255,6 +266,7 @@ class IdiomPatternsBuilder(NLPBasedBuilder):
             patterns = [
                 self.build_modification(idiom_tokens),
                 self.build_openslot(idiom_tokens),
+                self.build_hyphenated(idiom_tokens),
                 self.build_passivisation_with_modification(idiom_tokens),
                 self.build_passivisation_with_openslot(idiom_tokens)
             ]
@@ -292,5 +304,5 @@ class IIPBuilder(NLPBasedBuilder):
     def update_meta(self):
         # can I change the name & version of this pipeline?
         # you could later add description here.
-        self.nlp.meta['name'] += "_" + MIP_NAME
-        self.nlp.meta['version'] = MIP_VERSION
+        self.nlp.meta['name'] += "_" + IIP_NAME
+        self.nlp.meta['version'] = IIP_VERSION

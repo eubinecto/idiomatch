@@ -2,7 +2,7 @@
 Just some constants that must be defined manually
 """
 # to be used when building idiom patterns
-PRP_PLACEHOLDER_CASES = ['one\'s', 'someone\'s']
+PRP_PLACEHOLDER_CASES = ["one's", "someone's"]
 PRON_PLACEHOLDER_CASES = ['someone', 'something']
 OPTIONAL_CASES = [
     ",",  # comma is optional
@@ -10,7 +10,7 @@ OPTIONAL_CASES = [
 ]
 
 # this follows the syntax for spacy's tokenization rules
-TOKENISATION_CASES = {
+SPECIAL_TOK_CASES = {
     "one's": [{"ORTH": "one's"}],
     "someone's": [{"ORTH": "someone's"}],
     # TODO: is this really the only way?
@@ -29,7 +29,7 @@ IGNORED_CASES = [
     "be absorbed by",  # this one is also deleted
 ]
 
-
+# add more idioms here.
 MORE_IDIOM_CASES = [
     "have blood on one's hands",
     "come down to Earth",
