@@ -6,7 +6,6 @@ PRP_PLACEHOLDER_CASES = ["one's", "someone's"]
 PRON_PLACEHOLDER_CASES = ['someone', 'something']
 OPTIONAL_CASES = [
     ",",  # comma is optional
-    "a", "an", "the"  # articles are optional
 ]
 
 # this follows the syntax for spacy's tokenization rules

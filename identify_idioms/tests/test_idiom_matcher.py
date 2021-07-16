@@ -3,10 +3,10 @@ Should include tests for the matcher.
 """
 from typing import Optional, List
 from unittest import TestCase
-from spacy import load, Language
+from spacy import Language
 from spacy.matcher import Matcher
 from identify_idioms.service import build_idiom_matcher
-from identify_idioms.configs import BASE_NLP_MODEL
+from identify_idioms.builders import NLPBasedBuilder
 
 
 class TestIdiomMatcher(TestCase):
@@ -22,10 +22,10 @@ class TestIdiomMatcher(TestCase):
         # prepare resource, before running any tests below
         # I get some rsrc-related warning. Not sure why.
         # first, save the idiom patterns.
-        nlp = load(BASE_NLP_MODEL)
-        # set these as the global variables.
-        cls.nlp = nlp
-        cls.idiom_matcher = build_idiom_matcher(nlp.vocab)
+        builder = NLPBasedBuilder()
+        builder.construct()
+        cls.nlp = builder.nlp
+        cls.idiom_matcher = build_idiom_matcher(cls.nlp.vocab)
 
     def lemmatise(self, sent: str) -> List[str]:
         doc = self.nlp(sent)
@@ -128,22 +128,6 @@ class TestIdiomMatcher(TestCase):
                  " and sample some of this delightful food."
         lemmas = self.lemmatise(sent_1)
         self.assertIn("come down to earth", lemmas)
-
-    def test_article_a_optional(self):
-        sent = "I hope a couple of you shed tear when you heard I'd carked it."
-        lemmas = self.lemmatise(sent)
-        self.assertIn("shed a tear", lemmas)
-
-    def test_article_an_optional(self):
-        sent = "Because she would not take no for answer."
-        lemmas = self.lemmatise(sent)
-        self.assertIn("take no for an answer", lemmas)
-
-    def test_article_the_optional(self):
-        sent = "You want a secure computer and online experience, " \
-               "then take the bull by horns and make it happen."
-        lemmas = self.lemmatise(sent)
-        self.assertIn("take the bull by the horns", lemmas)
 
     def test_comma_optional(self):
         sent = "Also, all those who believe that marriage makes people this that and the other" \

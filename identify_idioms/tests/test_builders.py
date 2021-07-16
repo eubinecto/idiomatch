@@ -56,7 +56,6 @@ class TestIdiomPatternsBuilder(TestCase):
     """
     Unit test the class. That's what you need here.
     """
-
     @classmethod
     def setUpClass(cls) -> None:
         builder = NLPBasedBuilder()
