@@ -1,14 +1,6 @@
-from spacy import Language, Vocab
+from spacy import Vocab
 from spacy.matcher import Matcher
-from identify_idioms.builders import IIPBuilder, IdiomMatcherBuilder
-
-
-def build_iip() -> Language:
-    """
-    builds identify-idiom-pipeline. Built on top of web-core-sm.
-    """
-    iip_builder = IIPBuilder()
-    return iip_builder.construct()
+from identify_idioms.builders import IdiomMatcherBuilder
 
 
 def build_idiom_matcher(vocab: Vocab) -> Matcher:

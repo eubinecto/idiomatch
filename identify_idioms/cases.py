@@ -34,4 +34,3 @@ MORE_IDIOM_CASES = [
     "come down to Earth",
     "beat around the bush"
 ]
-

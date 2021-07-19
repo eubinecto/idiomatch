@@ -5,8 +5,6 @@ from spacy.tokens import Token
 from tqdm import tqdm
 from identify_idioms.configs import \
     BASE_NLP_MODEL, \
-    IIP_NAME, \
-    IIP_VERSION, \
     TARGET_IDIOM_MIN_LENGTH, \
     TARGET_IDIOM_MIN_WORD_COUNT, \
     SLOP, WILDCARD
@@ -279,30 +277,3 @@ class IdiomPatternsBuilder(NLPBasedBuilder):
                     idiom: patterns
                 }
             )
-
-
-class IIPBuilder(NLPBasedBuilder):
-
-    def __init__(self):
-        super().__init__()
-
-    def steps(self) -> List[Callable]:
-        return super(IIPBuilder, self).steps() + [
-            self.add_components,
-            self.update_meta
-        ]
-
-    def construct(self, *args) -> Language:
-        super(IIPBuilder, self).construct()
-        return self.nlp
-
-    def add_components(self):
-        # make sure the component is added at the end of the pipeline.
-        # or, at least after tok2vec & lemmatizer
-        self.nlp.add_pipe("merge_idioms", last=True)
-
-    def update_meta(self):
-        # can I change the name & version of this pipeline?
-        # you could later add description here.
-        self.nlp.meta['name'] += "_" + IIP_NAME
-        self.nlp.meta['version'] = IIP_VERSION
