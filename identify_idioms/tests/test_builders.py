@@ -63,7 +63,6 @@ class TestIdiomPatternsBuilder(TestCase):
     def setUpClass(cls) -> None:
         nlp = spacy.load(NLP_MODEL)
         builder = NLPBasedBuilder(nlp)
-        builder.construct()  # for adding special cases.
         cls.nlp = builder.nlp
 
     def test_insert_slop(self):
