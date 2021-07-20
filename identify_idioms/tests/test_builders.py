@@ -106,14 +106,14 @@ class TestIdiomPatternsBuilder(TestCase):
         self.assertIn(lemma, strings)
 
     def test_build_openslot(self):
-        lemma = "keep something at arm's length"
+        lemma = "keep someone in the loop"
         idiom_doc = self.nlp(lemma)
         idiom_tokens = [token for token in idiom_doc]
         pattern = IdiomPatternsBuilder.build_openslot(idiom_tokens)
         matcher = Matcher(self.nlp.vocab)
         matcher.add(lemma, [pattern])
         # modification.
-        doc = self.nlp("keeping German and France at arm's length")
+        doc = self.nlp("This will keep all of us in the loop")
         matches = matcher(doc)
         strings = [
             self.nlp.vocab.strings[match_id]
