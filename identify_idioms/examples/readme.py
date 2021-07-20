@@ -18,19 +18,19 @@ def main():
     idiom_matcher = IdiomMatcher.from_pretrained(nlp)  # this will take approx 40 seconds.
 
     sent = sentences[0]
-    print("modification: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))  # use the method identify.
+    print("### modification ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[1]
-    print("openslot: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### openslot ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[2]
-    print("hyphenated: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### hyphenated ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[3]
-    print("hyphen omitted: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### hyphen omitted ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[4]
-    print("passivisation (modification): {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### passivisation (modification) ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[5]
-    print("passivisation (openslot): {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### passivisation (openslot) ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[6]
-    print("inclusion: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### inclusion ### \n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
 
 
 if __name__ == '__main__':

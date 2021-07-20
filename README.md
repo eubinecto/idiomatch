@@ -35,32 +35,40 @@ def main():
     idiom_matcher = IdiomMatcher.from_pretrained(nlp)  # this will take approx 40 seconds.
 
     sent = sentences[0]
-    print("modification: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))  # use the method identify.
+    print("### modification ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[1]
-    print("openslot: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### openslot ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[2]
-    print("hyphenated: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### hyphenated ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[3]
-    print("hyphen omitted: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### hyphen omitted ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[4]
-    print("passivisation (modification): {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### passivisation (modification) ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[5]
-    print("passivisation (openslot): {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### passivisation (openslot) ###\n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
     sent = sentences[6]
-    print("inclusion: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
+    print("### inclusion ### \n: {} -> {}".format(sent, idiom_matcher.identify(nlp(sent))))
 
 
 if __name__ == '__main__':
     main()
 ```
 ```
-modification: He called my blatant bluff -> [{'idiom': "call someone's bluff", 'span': 'called my blatant bluff', 'meta': (11321959191976266509, 1, 5)}]
-openslot: This will keep all of us posted -> [{'idiom': 'keep someone posted', 'span': 'keep all of us posted', 'meta': (11722464987668971331, 2, 7)}]
-hyphenated: That was one balls-out street race! -> [{'idiom': 'balls-out', 'span': 'balls - out', 'meta': (2876800142358111704, 3, 6)}]
-hyphen omitted: That was one balls out street race! -> [{'idiom': 'balls-out', 'span': 'balls out', 'meta': (2876800142358111704, 3, 5)}]
-passivisation (modification): the floodgates are finally opened -> [{'idiom': 'open the floodgates', 'span': 'the floodgates are finally opened', 'meta': (13612509636477658373, 0, 5)}]
-passivisation (openslot): my bluff was embarrassingly called by her -> [{'idiom': "call someone's bluff", 'span': 'my bluff was embarrassingly called', 'meta': (11321959191976266509, 0, 5)}]
-inclusion: If she dies, you wil have her blood on your hands! -> [{'idiom': "have blood on one's hands", 'span': 'have her blood on your hands', 'meta': (5930902300252675198, 6, 12)}, {'idiom': "on one's hands", 'span': 'on your hands', 'meta': (8246625119345375174, 9, 12)}]
+adding patterns into idiom_matcher...: 100%|██████████| 2756/2756 [00:51<00:00, 53.10it/s]
+### modification ###
+: He called my blatant bluff -> [{'idiom': "call someone's bluff", 'span': 'called my blatant bluff', 'meta': (11321959191976266509, 1, 5)}]
+### openslot ###
+: This will keep all of us posted -> [{'idiom': 'keep someone posted', 'span': 'keep all of us posted', 'meta': (11722464987668971331, 2, 7)}]
+### hyphenated ###
+: That was one balls-out street race! -> [{'idiom': 'balls-out', 'span': 'balls - out', 'meta': (2876800142358111704, 3, 6)}]
+### hyphen omitted ###
+: That was one balls out street race! -> [{'idiom': 'balls-out', 'span': 'balls out', 'meta': (2876800142358111704, 3, 5)}]
+### passivisation (modification) ###
+: the floodgates are finally opened -> [{'idiom': 'open the floodgates', 'span': 'the floodgates are finally opened', 'meta': (13612509636477658373, 0, 5)}]
+### passivisation (openslot) ###
+: my bluff was embarrassingly called by her -> [{'idiom': "call someone's bluff", 'span': 'my bluff was embarrassingly called', 'meta': (11321959191976266509, 0, 5)}]
+### inclusion ###
+: If she dies, you wil have her blood on your hands! -> [{'idiom': "have blood on one's hands", 'span': 'have her blood on your hands', 'meta': (5930902300252675198, 6, 12)}, {'idiom': "on one's hands", 'span': 'on your hands', 'meta': (8246625119345375174, 9, 12)}]
 ```
 
 ## From pretrained?
