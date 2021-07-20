@@ -33,6 +33,19 @@ class TestIdiomMatcher(TestCase):
             for (lemma_id, _, _) in matches
         ]
 
+    def test_identify_two_idioms(self):
+        sent = "Try running, you'll have blood on your hands."
+        doc = self.nlp(sent)
+        results = self.idiom_matcher.identify(doc)
+        # have blood on one's hands
+        self.assertEqual("have blood on one's hands", results[0]['idiom'])
+        self.assertEqual("have blood on your hands", results[0]['span'])
+        self.assertEqual(self.idiom_matcher(doc)[0], results[0]['meta'])
+        # on one's hands
+        self.assertEqual("on one's hands", results[1]['idiom'])
+        self.assertEqual("on your hands", results[1]['span'])
+        self.assertEqual(self.idiom_matcher(doc)[1], results[1]['meta'])
+
     def test_optional_hyphens(self):
         # balls-out, balls out
         sent_balls = "in terms of rhyme, meter, and balls-out swagger."

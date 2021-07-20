@@ -18,49 +18,30 @@ python3 spacy -m download en_core_web_sm
 import spacy
 from identify_idioms import IdiomMatcher
 
-# examples sentences
-sentences = [
+
+def main():
+
+    sentences = [
         "You are down to earth.",
         "Have you found your feet on the new job?",
-        "To ask our members to accept a pay cut heaps insult on injury."
     ]
 
+    nlp = spacy.load("en_core_web_sm")  # idiom matcher needs an nlp pipeline. Currently supports en_core_web_sm only.
+    idiom_matcher = IdiomMatcher.from_pretrained(nlp)  # this will take approx 40 seconds.
 
-# build a spacy pipeline for identifying idioms, based off of en_core_web_sm model
-nlp = spacy.load("en_core_web_sm")
-idiom_matcher = IdiomMatcher.from_pretrained(nlp.vocab)
+    for sent in sentences:
+        # process the sentence
+        doc = nlp(sent)
+        # identify all
+        matches = idiom_matcher(doc)
+        for token_id, start, end in matches:
+            print(nlp.vocab.strings[token_id], start, end)
+        print("-----")
 
 
-for sent in sentences:
-    # process the sentence
-    doc = iip(sent)
-    # idioms are identified as atomic tokens in tokenisation process
-    token_texts = [token.text for token in doc]
-    # supports lemmatization of idioms as well
-    token_lemmas = [token.lemma_ for token in doc]
-    # is_idiom custom attribute can be used to filter idioms
-    token_idioms = [token.lemma_ for token in doc if token._.is_idiom]
+if __name__ == '__main__':
+    main()
 
-    print("tokenisation:", token_texts)
-    print("lemmatisation:", token_lemmas)
-    print("filtering:", token_idioms)
-    print("-----------")
-
-```
-output:
-```
-tokenisation: ['You', 'are', 'down to earth', '.']
-lemmatisation: ['you', 'be', 'down-to-earth', '.']
-filtering: ['down-to-earth']
------------
-tokenisation: ['Have', 'you', 'found your feet', 'on', 'the', 'new', 'job', '?']
-lemmatisation: ['have', 'you', "find one's feet", 'on', 'the', 'new', 'job', '?']
-filtering: ["find one's feet"]
------------
-tokenisation: ['To', 'ask', 'our', 'members', 'to', 'accept', 'a', 'pay', 'cut', 'heaps insult on injury', '.']
-lemmatisation: ['to', 'ask', 'our', 'member', 'to', 'accept', 'a', 'pay', 'cut', 'add insult to injury', '.']
-filtering: ['add insult to injury']
------------
 ```
 
 ## Supported Idioms

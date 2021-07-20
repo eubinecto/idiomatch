@@ -3,6 +3,8 @@
 from spacy import Language
 from spacy.matcher.matcher import Matcher
 from typing import List, Dict
+
+from spacy.tokens.doc import Doc
 from tqdm import tqdm
 from identify_idioms.builders import IdiomPatternsBuilder, NLPBasedBuilder
 from identify_idioms.loaders import load_idiom_patterns
@@ -26,6 +28,18 @@ class IdiomMatcher(Matcher):
         idiom_patterns = load_idiom_patterns()
         idiom_matcher.add_idiom_patterns(idiom_patterns)
         return idiom_matcher
+
+    def identify(self, doc: Doc) -> List[dict]:
+        matches = self(doc)
+        res = [
+            {
+                "idiom": self.idiom_patterns_builder.nlp.vocab.strings[token_id],
+                "span": " ".join([token.text for token in doc[start:end]]),
+                "meta": (token_id, start, end),
+            }
+            for token_id, start, end in matches
+        ]
+        return res
 
     def add_idiom_patterns(self, idiom_patterns: Dict[str, list]):
         for idiom, patterns in tqdm(idiom_patterns.items(),
