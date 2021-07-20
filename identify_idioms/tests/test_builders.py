@@ -1,7 +1,9 @@
 from unittest import TestCase
+
+import spacy
 from spacy.matcher import Matcher
 from identify_idioms.builders import IdiomPatternsBuilder, NLPBasedBuilder, IdiomsBuilder
-from identify_idioms.configs import SLOP
+from identify_idioms.configs import SLOP, NLP_MODEL
 
 
 class TestIdiomsBuilder(TestCase):
@@ -21,7 +23,8 @@ class TestIdiomsBuilder(TestCase):
 class TestNLPBasedBuilder(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        builder = NLPBasedBuilder()
+        nlp = spacy.load(NLP_MODEL)
+        builder = NLPBasedBuilder(nlp)
         builder.add_special_tok_cases()
         cls.nlp = builder.nlp
 
@@ -58,7 +61,8 @@ class TestIdiomPatternsBuilder(TestCase):
     """
     @classmethod
     def setUpClass(cls) -> None:
-        builder = NLPBasedBuilder()
+        nlp = spacy.load(NLP_MODEL)
+        builder = NLPBasedBuilder(nlp)
         builder.construct()  # for adding special cases.
         cls.nlp = builder.nlp
 

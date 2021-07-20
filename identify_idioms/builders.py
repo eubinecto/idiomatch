@@ -1,16 +1,14 @@
+from abc import ABC
 from typing import List, Callable, Optional, Dict
-from spacy import Language, load, Vocab
-from spacy.matcher import Matcher
+from spacy import Language
 from spacy.tokens import Token
 from tqdm import tqdm
 from identify_idioms.configs import \
-    BASE_NLP_MODEL, \
     TARGET_IDIOM_MIN_LENGTH, \
     TARGET_IDIOM_MIN_WORD_COUNT, \
     SLOP, WILDCARD
 from identify_idioms.loaders import \
-    load_idiom_patterns, \
-    load_idioms, load_slide_idioms
+    load_slide_idioms
 from identify_idioms.cases import \
     IGNORED_CASES, \
     MORE_IDIOM_CASES, \
@@ -18,6 +16,7 @@ from identify_idioms.cases import \
     PRON_PLACEHOLDER_CASES, SPECIAL_TOK_CASES, OPTIONAL_CASES
 import logging
 from sys import stdout
+import copy
 
 logging.basicConfig(stream=stdout, level=logging.INFO)  # why does logging not work?
 
@@ -30,56 +29,6 @@ class Builder:
 
     def steps(self) -> List[Callable]:
         raise NotImplementedError
-
-
-class IdiomMatcherBuilder(Builder):
-
-    def __init__(self):
-        """
-        given a language and a generator of idioms, this
-        """
-        self.vocab: Optional[Vocab] = None
-        self.idiom_patterns: Optional[dict] = None
-        self.idiom_matcher: Optional[Matcher] = None  # to be built
-
-    def construct(self, vocab: Vocab) -> Matcher:
-        """
-        must be given a vocab.
-        :param vocab:
-        :return:
-        """
-        self.vocab = vocab
-        super(IdiomMatcherBuilder, self).construct()
-        return self.idiom_matcher
-
-    def steps(self) -> List[Callable]:
-        # order matters. this is why I'm using a builder pattern.
-        return [
-            self.prepare,
-            self.load_idiom_patterns,
-            self.add_idiom_patterns
-        ]
-
-    def prepare(self):
-        """
-        prepare the ingredients needed
-        """
-        self.idiom_matcher = Matcher(self.vocab)
-
-    def load_idiom_patterns(self):
-        # build the patterns here.
-        # well..
-        self.idiom_patterns = load_idiom_patterns()
-
-    def add_idiom_patterns(self):
-        for idiom, patterns in tqdm(self.idiom_patterns.items(),
-                                    desc="adding patterns into idiom_matcher..."):
-            try:
-                self.idiom_matcher.add(idiom, patterns)
-            except Exception as e:
-                print(idiom)
-                print(patterns)
-                raise e
 
 
 class IdiomsBuilder(Builder):
@@ -138,15 +87,11 @@ class IdiomsBuilder(Builder):
         ]
 
 
-class NLPBasedBuilder(Builder):
+class NLPBasedBuilder(Builder, ABC):
 
-    def __init__(self):
-        self.nlp: Language = load(BASE_NLP_MODEL)
-
-    def steps(self) -> List[Callable]:
-        return [
-            self.add_special_tok_cases
-        ]
+    def __init__(self, nlp: Language):
+        self.nlp: Language = nlp
+        self.add_special_tok_cases()
 
     def add_special_tok_cases(self):
         for term, case in SPECIAL_TOK_CASES.items():
@@ -155,20 +100,24 @@ class NLPBasedBuilder(Builder):
 
 class IdiomPatternsBuilder(NLPBasedBuilder):
 
-    def __init__(self):
-        super().__init__()
-        self.idioms: List[str] = load_idioms()
+    def __init__(self, nlp: Language):
+        super().__init__(nlp)
+        self.idioms: List[str] = list()
         self.idiom_patterns: Dict[str, list] = dict()  # this is the objective.
-        self.patterns: List[List[dict]] = list()  # just a temporary store.
 
-    def construct(self, *args) -> Dict[str, list]:
+    def construct(self, idioms: List[str]) -> Dict[str, list]:
+        self.idioms += idioms
         super(IdiomPatternsBuilder, self).construct()
-        return self.idiom_patterns
+        return copy.deepcopy(self.idiom_patterns)
 
     def steps(self) -> List[Callable]:
         return super(IdiomPatternsBuilder, self).steps() + [
             self.build_patterns
         ]
+
+    def clear(self):
+        self.idioms.clear()
+        self.idiom_patterns.clear()
 
     @staticmethod
     def insert_slop(patterns: List[dict], n: int) -> List[dict]:

@@ -1,18 +1,18 @@
 """
 Should include tests for the matcher.
 """
+import spacy
 from typing import Optional, List
 from unittest import TestCase
 from spacy import Language
-from spacy.matcher import Matcher
-from identify_idioms.service import build_idiom_matcher
-from identify_idioms.builders import NLPBasedBuilder
+from identify_idioms import IdiomMatcher
+from identify_idioms.configs import NLP_MODEL
 
 
 class TestIdiomMatcher(TestCase):
 
     nlp: Optional[Language] = None
-    idiom_matcher: Optional[Matcher] = None
+    idiom_matcher: Optional[IdiomMatcher] = None
 
     @classmethod
     def setUpClass(cls):
@@ -22,10 +22,8 @@ class TestIdiomMatcher(TestCase):
         # prepare resource, before running any tests below
         # I get some rsrc-related warning. Not sure why.
         # first, save the idiom patterns.
-        builder = NLPBasedBuilder()
-        builder.construct()
-        cls.nlp = builder.nlp
-        cls.idiom_matcher = build_idiom_matcher(cls.nlp.vocab)
+        cls.nlp = spacy.load(NLP_MODEL)
+        cls.idiom_matcher = IdiomMatcher.from_pretrained(cls.nlp)
 
     def lemmatise(self, sent: str) -> List[str]:
         doc = self.nlp(sent)
