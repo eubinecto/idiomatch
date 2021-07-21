@@ -5,14 +5,14 @@ import spacy
 from typing import Optional, List
 from unittest import TestCase
 from spacy import Language
-from idiomatch import IdiomMatcher
+from idiomatch import Idiomatcher
 from idiomatch.configs import NLP_MODEL
 
 
-class TestIdiomMatcher(TestCase):
+class TestIdiomatcher(TestCase):
 
     nlp: Optional[Language] = None
-    idiom_matcher: Optional[IdiomMatcher] = None
+    idiomatcher: Optional[Idiomatcher] = None
 
     @classmethod
     def setUpClass(cls):
@@ -23,28 +23,28 @@ class TestIdiomMatcher(TestCase):
         # I get some rsrc-related warning. Not sure why.
         # first, save the idiom patterns.
         cls.nlp = spacy.load(NLP_MODEL)
-        cls.idiom_matcher = IdiomMatcher.from_pretrained(cls.nlp)
+        cls.idiomatcher = Idiomatcher.from_pretrained(cls.nlp)
 
     def lemmatise(self, sent: str) -> List[str]:
         doc = self.nlp(sent)
-        matches = self.idiom_matcher(doc)
+        matches = self.idiomatcher(doc)
         return [
-            self.idiom_matcher.vocab.strings[lemma_id]
+            self.idiomatcher.vocab.strings[lemma_id]
             for (lemma_id, _, _) in matches
         ]
 
     def test_identify_two_idioms(self):
         sent = "Try running, you'll have blood on your hands."
         doc = self.nlp(sent)
-        results = self.idiom_matcher.identify(doc)
+        results = self.idiomatcher.identify(doc)
         # have blood on one's hands
         self.assertEqual("have blood on one's hands", results[0]['idiom'])
         self.assertEqual("have blood on your hands", results[0]['span'])
-        self.assertEqual(self.idiom_matcher(doc)[0], results[0]['meta'])
+        self.assertEqual(self.idiomatcher(doc)[0], results[0]['meta'])
         # on one's hands
         self.assertEqual("on one's hands", results[1]['idiom'])
         self.assertEqual("on your hands", results[1]['span'])
-        self.assertEqual(self.idiom_matcher(doc)[1], results[1]['meta'])
+        self.assertEqual(self.idiomatcher(doc)[1], results[1]['meta'])
 
     def test_optional_hyphens(self):
         # balls-out, balls out
@@ -76,56 +76,56 @@ class TestIdiomMatcher(TestCase):
     def test_match_catch_22(self):
         # TODO: This does not pass.
         sent_1 = "qualities attributed to the drug. It is a catch-22 for any trainer or owner."
-        matches = self.idiom_matcher(self.nlp(sent_1))
+        matches = self.idiomatcher(self.nlp(sent_1))
         self.assertTrue(matches)
 
     def test_match_catch_22_no_hyphen(self):
         sent_1 = "qualities attributed to the drug. It is a catch 22 for any trainer or owner."
         doc = self.nlp(sent_1)
-        matches = self.idiom_matcher(doc)
+        matches = self.idiomatcher(doc)
         self.assertTrue(matches)
 
     def test_match_catch_22_capitalised(self):
         sent_1 = "qualities attributed to the drug. It is a Catch-22 for any trainer or owner."
         doc = self.nlp(sent_1)
-        matches = self.idiom_matcher(doc)
+        matches = self.idiomatcher(doc)
         self.assertTrue(matches)
 
     def test_match_blow_by_blow(self):
         sent_1 = "He literally gives a blow-by-blow of how he killed her"
-        matches = self.idiom_matcher(self.nlp(sent_1))
+        matches = self.idiomatcher(self.nlp(sent_1))
         self.assertTrue(matches)
 
     def test_match_blow_by_blow_no_hyphen(self):
         sent_1 = "He literally gives a blow by blow of how he killed her"
-        matches = self.idiom_matcher(self.nlp(sent_1))
+        matches = self.idiomatcher(self.nlp(sent_1))
         self.assertTrue(matches)
 
     def test_match_blow_by_blow_capitalised(self):
         sent_1 = "He literally gives a Blow-By-Blow of how he killed her"
         # how should you fix this...?
         # we are doing exact match... at least for hyphenated terms.
-        matches = self.idiom_matcher(self.nlp(sent_1))
+        matches = self.idiomatcher(self.nlp(sent_1))
         self.assertTrue(matches)
 
     def test_balls_out(self):
         sent_1 = " in terms of rhyme, meter, and balls-out swagger. "
-        matches = self.idiom_matcher(self.nlp(sent_1))
+        matches = self.idiomatcher(self.nlp(sent_1))
         self.assertTrue(matches)
 
     def test_balls_out_capitalised_one(self):
         sent_1 = " in terms of rhyme, meter, and Balls-out swagger. "
-        matches = self.idiom_matcher(self.nlp(sent_1))
+        matches = self.idiomatcher(self.nlp(sent_1))
         self.assertTrue(matches)
 
     def test_balls_out_capitalised_two(self):
         sent_1 = " in terms of rhyme, meter, and Balls-Out swagger. "
-        matches = self.idiom_matcher(self.nlp(sent_1))
+        matches = self.idiomatcher(self.nlp(sent_1))
         self.assertTrue(matches)
 
     def test_balls_out_no_hyphen(self):
         sent_1 = " in terms of rhyme, meter, and balls out swagger. "
-        matches = self.idiom_matcher(self.nlp(sent_1))
+        matches = self.idiomatcher(self.nlp(sent_1))
         self.assertTrue(matches)
 
     def test_come_down_to_earth(self):

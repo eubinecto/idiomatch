@@ -10,7 +10,7 @@ from idiomatch.builders import IdiomPatternsBuilder, NLPBasedBuilder
 from idiomatch.loaders import load_idiom_patterns
 
 
-class IdiomMatcher(Matcher):
+class Idiomatcher(Matcher):
     """
     a matcher class for.. matching idioms.
     """
@@ -19,12 +19,12 @@ class IdiomMatcher(Matcher):
         self.idiom_patterns_builder = IdiomPatternsBuilder(nlp)
 
     @staticmethod
-    def from_pretrained(nlp: Language) -> 'IdiomMatcher':
+    def from_pretrained(nlp: Language) -> 'Idiomatcher':
         """
         load a pre-trained idiom matcher, which can identify more than 2000 English idioms.
         """
 
-        idiom_matcher = IdiomMatcher(nlp)
+        idiom_matcher = Idiomatcher(nlp)
         idiom_patterns = load_idiom_patterns()
         idiom_matcher.add_idiom_patterns(idiom_patterns)
         return idiom_matcher
@@ -43,7 +43,7 @@ class IdiomMatcher(Matcher):
 
     def add_idiom_patterns(self, idiom_patterns: Dict[str, list]):
         for idiom, patterns in tqdm(idiom_patterns.items(),
-                                    desc="adding patterns into idiom_matcher..."):
+                                    desc="adding patterns into idiomatcher..."):
             self.add(idiom, patterns)
 
     def add_idioms(self, idioms: List[str]):

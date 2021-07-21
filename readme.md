@@ -11,17 +11,18 @@ pip3 install idiomatch
 - `en-core-web-sm`>3.1.0
 
 ## Quick Start
+
 ```python3
 import spacy
-from idiomatch import IdiomMatcher
+from idiomatch import Idiomatcher
+
 
 def main():
-
     sent = "The floodgates will remain opened for a host of new lawsuits."  # a usecase of *open the floodgates*
     nlp = spacy.load("en_core_web_sm")  # idiom matcher needs an nlp pipeline; Currently supports en_core_web_sm only.
-    idiom_matcher = IdiomMatcher.from_pretrained(nlp)  # this will take approx 50 seconds.
+    idiomatcher = Idiomatcher.from_pretrained(nlp)  # this will take approx 50 seconds.
     doc = nlp(sent)  # process the sentence with an nlp pipeline
-    print(idiom_matcher.identify(doc))  # identify the idiom in the sentence
+    print(idiomatcher.identify(doc))  # identify the idiom in the sentence
 
 
 if __name__ == '__main__':
@@ -41,24 +42,23 @@ frequently used English idioms, which had been made available for open use court
 
 ## Adding Idioms Yourself
 
-If you have idioms that are not included in the list of supported idioms, you can add them to `IdiomMatcher`
+If you have idioms that are not included in the list of supported idioms, you can add them to `Idiomatcher`
 yourself with the `add_idioms` member method:
 
 ```python3
 import spacy
-from idiomatch import IdiomMatcher
+from idiomatch import Idiomatcher
 
 
 def main():
-
     nlp = spacy.load("en_core_web_sm")
-    idiom_matcher = IdiomMatcher(nlp)  # instantiate 
+    idiomatcher = Idiomatcher(nlp)  # instantiate 
     # As for a placeholder for openslot, use either: someone / something / someone's / one's 
-    idioms = ["have blood on one's hands", "on one's hands"]  
-    idiom_matcher.add_idioms(idioms)  # t
+    idioms = ["have blood on one's hands", "on one's hands"]
+    idiomatcher.add_idioms(idioms)  # t
     sent = "The leaders of this war have the blood of many thousands of people on their hands."
     doc = nlp(sent)
-    print(idiom_matcher.identify(doc))
+    print(idiomatcher.identify(doc))
 
 
 if __name__ == '__main__':
@@ -72,7 +72,7 @@ adding patterns into idiom_matcher...: 100%|██████████| 2/2 
 
 ## Supported Variations
 
-English idioms extensively vary in forms, at least in six different ways. `IdiomMatcher` can gracefully handle all the 
+English idioms extensively vary in forms, at least in six different ways. `Idiomatcher` can gracefully handle all the 
 cases, as exemplified below:
 
 
