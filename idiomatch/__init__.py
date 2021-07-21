@@ -6,8 +6,8 @@ from typing import List, Dict
 
 from spacy.tokens.doc import Doc
 from tqdm import tqdm
-from identify_idioms.builders import IdiomPatternsBuilder, NLPBasedBuilder
-from identify_idioms.loaders import load_idiom_patterns
+from idiomatch.builders import IdiomPatternsBuilder, NLPBasedBuilder
+from idiomatch.loaders import load_idiom_patterns
 
 
 class IdiomMatcher(Matcher):

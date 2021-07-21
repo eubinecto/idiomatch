@@ -1,8 +1,8 @@
 from unittest import TestCase
 import spacy
 from spacy.matcher import Matcher
-from identify_idioms.builders import IdiomPatternsBuilder, NLPBasedBuilder, IdiomsBuilder
-from identify_idioms.configs import SLOP, NLP_MODEL
+from idiomatch.builders import IdiomPatternsBuilder, NLPBasedBuilder, IdiomsBuilder
+from idiomatch.configs import SLOP, NLP_MODEL
 
 
 class TestIdiomsBuilder(TestCase):

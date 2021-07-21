@@ -3,10 +3,10 @@ import json
 import logging
 from sys import stdout
 import spacy
-from identify_idioms.builders import IdiomPatternsBuilder
-from identify_idioms.configs import NLP_MODEL
-from identify_idioms.loaders import load_idioms
-from identify_idioms.paths import IDIOM_PATTERNS_TSV
+from idiomatch.builders import IdiomPatternsBuilder
+from idiomatch.configs import NLP_MODEL
+from idiomatch.loaders import load_idioms
+from idiomatch.paths import IDIOM_PATTERNS_TSV
 
 logging.basicConfig(stream=stdout, level=logging.INFO)
 

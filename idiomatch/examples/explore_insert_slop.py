@@ -1,5 +1,5 @@
 
-from identify_idioms.builders import IdiomPatternsBuilder
+from idiomatch.builders import IdiomPatternsBuilder
 
 
 def main():

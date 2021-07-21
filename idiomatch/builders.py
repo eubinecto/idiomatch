@@ -3,13 +3,13 @@ from typing import List, Callable, Optional, Dict
 from spacy import Language
 from spacy.tokens import Token
 from tqdm import tqdm
-from identify_idioms.configs import \
+from idiomatch.configs import \
     TARGET_IDIOM_MIN_LENGTH, \
     TARGET_IDIOM_MIN_WORD_COUNT, \
     SLOP, WILDCARD
-from identify_idioms.loaders import \
+from idiomatch.loaders import \
     load_slide_idioms
-from identify_idioms.cases import \
+from idiomatch.cases import \
     IGNORED_CASES, \
     MORE_IDIOM_CASES, \
     PRP_PLACEHOLDER_CASES, \

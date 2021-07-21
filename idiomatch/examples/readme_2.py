@@ -1,5 +1,5 @@
 import spacy
-from identify_idioms import IdiomMatcher
+from idiomatch import IdiomMatcher
 
 
 def main():

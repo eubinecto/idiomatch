@@ -5,8 +5,8 @@ import spacy
 from typing import Optional, List
 from unittest import TestCase
 from spacy import Language
-from identify_idioms import IdiomMatcher
-from identify_idioms.configs import NLP_MODEL
+from idiomatch import IdiomMatcher
+from idiomatch.configs import NLP_MODEL
 
 
 class TestIdiomMatcher(TestCase):

@@ -4,7 +4,7 @@ from os import path
 # the root directory of this project
 # define the directories here
 PROJECT_ROOT_DIR = Path(__file__).resolve().parent.parent.__str__()
-LIB_ROOT_DIR = path.join(PROJECT_ROOT_DIR, "identify_idioms")
+LIB_ROOT_DIR = path.join(PROJECT_ROOT_DIR, "idiomatch")
 # external data
 DATA_DIR = path.join(PROJECT_ROOT_DIR, "data")
 SLIDE_DIR = path.join(DATA_DIR, "slide")

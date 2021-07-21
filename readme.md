@@ -3,15 +3,12 @@
 An implementation of [SpaCy(3.0)](https://nightly.spacy.io)'s `Matcher` specifically designed for identifying English idioms.
 
 ## Install
-
-install the library:
-```
+```bash
 pip3 install idiomatch
 ```
-download Spacy's core model for English:
-```
-python3 spacy -m download en_core_web_sm
-```
+### Dependencies
+- `spacy`>=3.0.1
+- `en-core-web-sm`>3.1.0
 
 ## Quick Start
 ```python3
@@ -37,8 +34,8 @@ adding patterns into idiom_matcher...: 100%|██████████| 2756
 ```
 
 ## Supported Idioms
-List of supported idioms with matching patterns can be found in [`idiomatch/resources/idiom_patterns.csv`](https://github.com/eubinecto/identify-idioms/blob/main/identify_idioms/resources/idiom_patterns.tsv). Total of 2758 idioms are available for
-matching & merging. These "target idioms" were extracted from a vocabulary of 5000 most 
+List of supported idioms can be found in `idiomatch/resources/idioms.txt`. Total of 2758 idioms are available for
+matching. These "target idioms" were extracted from a vocabulary of 5000 most 
 frequently used English idioms, which had been made available for open use courtesy of [IBM's SLIDE project](https://developer.ibm.com/exchanges/data/all/sentiment-lexicon-of-idiomatic-expressions/).
 
 

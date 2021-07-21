@@ -1,5 +1,5 @@
-from identify_idioms.builders import IdiomsBuilder
-from identify_idioms.paths import IDIOMS_TXT
+from idiomatch.builders import IdiomsBuilder
+from idiomatch.paths import IDIOMS_TXT
 
 
 def main():

@@ -1,7 +1,7 @@
 import csv
 import json
 from typing import List, Dict
-from identify_idioms.paths import \
+from idiomatch.paths import \
     SLIDE_TSV,\
     IDIOM_PATTERNS_TSV,\
     IDIOMS_TXT
