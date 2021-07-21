@@ -111,7 +111,7 @@ class IdiomPatternsBuilder(NLPBasedBuilder):
         return copy.deepcopy(self.idiom_patterns)
 
     def steps(self) -> List[Callable]:
-        return super(IdiomPatternsBuilder, self).steps() + [
+        return [
             self.build_patterns
         ]
 

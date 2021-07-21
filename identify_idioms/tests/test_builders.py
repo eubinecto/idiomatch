@@ -1,5 +1,4 @@
 from unittest import TestCase
-
 import spacy
 from spacy.matcher import Matcher
 from identify_idioms.builders import IdiomPatternsBuilder, NLPBasedBuilder, IdiomsBuilder
