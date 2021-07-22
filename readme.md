@@ -92,4 +92,4 @@ inclusion | *If she dies, you wil **have her blood on your hands**!* | `[{'idiom
 
 ## How Does it Work?
 
-The idiom-matching patterns are heavily inspired by Hughs et al. (2021) work on [*Flexible Retrieval of Idiomatic Expressions from a Large Text Corpus*](https://www.mdpi.com/1019008).
+The idiom-matching patterns, which are the foundations of `Idiomatcher`'s flexibility, are heavily inspired by Hughs et al.'s briliant work (2021) on [*Flexible Retrieval of Idiomatic Expressions from a Large Text Corpus*](https://www.mdpi.com/1019008).
