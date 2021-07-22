@@ -4,11 +4,13 @@ An implementation of [SpaCy(3.0)](https://nightly.spacy.io)'s `Matcher` specific
 
 ## Install
 ```bash
-pip3 install idiomatch
+pip3 install idiomatch  # install the library
+python3 -m spacy download en_core_web_sm  # idiomatch depends on SpaCy's en_core_web_sm model
 ```
+
 ### Dependencies
-- `spacy`>=3.0.1
-- `en-core-web-sm`>3.1.0
+- `spacy` >= 3.0.1
+- `en-core-web-sm` >= 3.1.0
 
 ## Quick Start
 
@@ -55,7 +57,7 @@ def main():
     idiomatcher = Idiomatcher(nlp)  # instantiate 
     # As for a placeholder for openslot, use either: someone / something / someone's / one's 
     idioms = ["have blood on one's hands", "on one's hands"]
-    idiomatcher.add_idioms(idioms)  # t
+    idiomatcher.add_idioms(idioms)  # this will train idiomatcher to identify the given idioms
     sent = "The leaders of this war have the blood of many thousands of people on their hands."
     doc = nlp(sent)
     print(idiomatcher.identify(doc))

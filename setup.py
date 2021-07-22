@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='idiomatch',
-    version='1.0',
+    version='1.0.1',
     description='A SpaCy Matcher for identifying idioms',
     url='https://github.com/eubinecto/idiomatch',
     author='Eu-Bin KIM',
@@ -15,8 +15,6 @@ setup(
     packages=find_packages(),
     install_requires=[
         'spacy>=3.0.1',  # 3.0 is now officially supported
-        # https://stackoverflow.com/a/53383704
-        'en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.1.0/en_core_web_sm-3.1.0-py3-none-any.whl'
     ],
     # include the patterns and target idioms.
     package_data={
