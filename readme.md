@@ -2,22 +2,16 @@
 
 An implementation of [SpaCy(3.0)](https://nightly.spacy.io)'s `Matcher` specifically designed for identifying English idioms.
 
-## Install
-```bash
-pip3 install idiomatch  # install the library
-python3 -m spacy download en_core_web_sm  # idiomatch depends on SpaCy's en_core_web_sm model
-```
-
-### Dependencies
-- `spacy` >= 3.0.1
-- `en-core-web-sm` >= 3.1.0
 
 ## Quick Start
+Install the library via uv (or whatever package manager you prefer)
+```bash
+uv add idiomatch  # install the library
+```
 
 ```python3
 import spacy
 from idiomatch import Idiomatcher
-
 
 def main():
     sent = "The floodgates will remain opened for a host of new lawsuits."  # a usecase of *open the floodgates*
