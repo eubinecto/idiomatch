@@ -16,9 +16,9 @@ from idiomatch import Idiomatcher
 def main():
     sent = "The floodgates will remain opened for a host of new lawsuits."  # a usecase of *open the floodgates*
     nlp = spacy.load("en_core_web_sm")  # idiom matcher needs an nlp pipeline; Currently supports en_core_web_sm only.
-    idiomatcher = Idiomatcher.from_pretrained(nlp)  # this will take approx 50 seconds.
+    idiomatcher = Idiomatcher.from_pretrained(nlp.vocab)  # this will take approx 50 seconds.
     doc = nlp(sent)  # process the sentence with an nlp pipeline
-    print(idiomatcher.identify(doc))  # identify the idiom in the sentence
+    print(idiomatcher(doc))  # identify the idiom in the sentence
 
 
 if __name__ == '__main__':
@@ -48,13 +48,13 @@ from idiomatch import Idiomatcher
 
 def main():
     nlp = spacy.load("en_core_web_sm")
-    idiomatcher = Idiomatcher(nlp)  # instantiate 
+    idiomatcher = Idiomatcher.from_pretrained(nlp.vocab)  # instantiate 
     # As for a placeholder for openslot, use either: someone / something / someone's / one's 
     idioms = ["have blood on one's hands", "on one's hands"]
-    idiomatcher.add_idioms(idioms)  # this will train idiomatcher to identify the given idioms
+    idiomatcher.add_idioms(nlp, idioms)  # this will train idiomatcher to identify the given idioms
     sent = "The leaders of this war have the blood of many thousands of people on their hands."
     doc = nlp(sent)
-    print(idiomatcher.identify(doc))
+    print(idiomatcher(doc))
 
 
 if __name__ == '__main__':
