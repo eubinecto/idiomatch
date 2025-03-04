@@ -4,9 +4,11 @@ An implementation of [SpaCy(3.0)](https://nightly.spacy.io)'s `Matcher` specific
 
 
 ## Quick Start
+
+
 Install the library via uv (or whatever package manager you prefer)
 ```bash
-uv add idiomatch  # install the library
+uv add idiomatch 
 ```
 
 ```python3

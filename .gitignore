@@ -136,3 +136,4 @@ idiomatchenv
 # uv specific
 .uv/
 .uvenv/
+.env.local
