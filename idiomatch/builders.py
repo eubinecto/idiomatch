@@ -99,43 +99,17 @@ def build_modification(idiom_tokens: list[Token]) -> list[dict]:
 
 
 def build_hyphenated(idiom_tokens: list[Token]) -> list[dict]:
-    """
-    Build pattern for hyphenated expressions.
-    
-    Creates multiple pattern variations:
-    1. One with exact hyphen match
-    2. One with the hyphen as optional
-    3. One that splits the tokens around hyphens for non-hyphenated variants
-    
-    This allows matching variants like:
-    - "catch-22", "Catch-22" (with hyphen)
-    - "catch 22", "Catch 22" (without hyphen)
-    """
-    # Pattern 1: Exact match with hyphen but case-insensitive
-    hyphen_pattern = []
-    for token in idiom_tokens:
-        if token.text == "-":
-            hyphen_pattern.append({"TEXT": "-"})
-        else:
-            hyphen_pattern.append({"LOWER": token.text.lower()})
-    
-    # Pattern 2: Optional hyphen match (for partial matches)
-    optional_hyphen_pattern = []
-    for token in idiom_tokens:
-        if token.text == "-":
-            optional_hyphen_pattern.append({"TEXT": "-", "OP": "?"})
-        else:
-            optional_hyphen_pattern.append({"LOWER": token.text.lower()})
-    
-    # Pattern 3: Split around hyphens (for non-hyphenated variants)
-    non_hyphen_pattern = []
-    for token in idiom_tokens:
-        if token.text != "-":
-            non_hyphen_pattern.append({"LOWER": token.text.lower()})
-    
-    # Return all patterns for the matcher
-    patterns = [p for p in [hyphen_pattern, optional_hyphen_pattern, non_hyphen_pattern] if p]
-    return patterns
+    """Build pattern for hyphenated expressions with optional hyphen."""
+    pattern = [
+        {"TEXT": token.text, "OP": "?"} if token.text == "-"
+        # Don't use lemma (this is to avoid false-positives)
+        # Using regexp for case-insensitive match
+        else {"TEXT": {"REGEX": r"(?i)^{}$".format(token.text)}}
+        for token in idiom_tokens
+    ]
+    # Wrap the pattern in a list, since matcher.add() expects a list of patterns
+    # Each pattern is itself a list of token dicts
+    return [pattern]
 
 
 def build_openslot(idiom_tokens: list[Token]) -> list[dict]:
@@ -180,16 +154,24 @@ def build_idiom_patterns(idioms: list[str], nlp: Language) -> dict[str, list]:
         idiom_tokens = list(nlp(idiom))
         
         # Build all pattern types
-        patterns = [
+        pattern_groups = [
             build_modification(idiom_tokens),
             build_openslot(idiom_tokens),
-            build_hyphenated(idiom_tokens),
             build_passivisation_with_modification(idiom_tokens),
             build_passivisation_with_openslot(idiom_tokens)
         ]
         
+        # Handle hyphenated separately as it may return a list of patterns
+        hyphenated_patterns = build_hyphenated(idiom_tokens)
+        if isinstance(hyphenated_patterns, list) and hyphenated_patterns and isinstance(hyphenated_patterns[0], list):
+            # If it's a list of patterns, extend pattern_groups with each pattern
+            pattern_groups.extend(hyphenated_patterns)
+        else:
+            # Otherwise add it as a single pattern group
+            pattern_groups.append(hyphenated_patterns)
+        
         # Filter out empty patterns
-        patterns = [pattern for pattern in patterns if pattern]
+        patterns = [pattern for pattern in pattern_groups if pattern]
         
         # Add to results dictionary
         idiom_patterns[idiom] = patterns

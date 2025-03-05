@@ -203,8 +203,8 @@ wheels = [
 
 [[package]]
 name = "idiomatch"
-version = "0.1.0"
-source = { virtual = "." }
+version = "0.2.1"
+source = { editable = "." }
 dependencies = [
     { name = "loguru" },
     { name = "spacy" },

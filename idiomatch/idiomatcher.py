@@ -7,6 +7,7 @@ from tqdm import tqdm
 from pathlib import Path
 from loguru import logger
 from idiomatch.builders import build_idiom_patterns
+from idiomatch.configs import SLOP
 
 
 class Idiomatcher(Matcher):
@@ -15,14 +16,33 @@ class Idiomatcher(Matcher):
     """
 
     @staticmethod
-    def from_pretrained(vocab: Vocab) -> 'Idiomatcher':
+    def from_pretrained(vocab: Vocab, slop: int = SLOP) -> 'Idiomatcher':
         """
-        load a pre-trained idiom matcher, which can identify more than 2000 English idioms.
+        Load a pre-trained idiom matcher, which can identify more than 2000 English idioms.
+        
+        Args:
+            vocab: spaCy vocabulary
+            slop: The slop value to use (1-5). If None, use the default from configs.SLOP
+                  This determines which pattern file to load.
+        
+        Returns:
+            An initialized Idiomatcher
+            
+        Raises:
+            ValueError: If slop value is not in the range [1,5]
         """
-        logger.info("Loading pre-trained idiom matcher...")
-        # load idiom patterns 
+        # Validate slop value
+        if slop < 1 or slop > 5:   
+            raise ValueError(f"Slop value must be between 1 and 5, got {slop}")
+            
+        logger.info(f"Loading pre-trained idiom matcher with SLOP={slop}...")
+        # Determine which pattern file to load
         import json
-        patterns_path = Path(__file__).parent / "patterns.json"
+        patterns_path = Path(__file__).parent / "patterns" / f"slop_{slop}.json"
+            
+        if not patterns_path.exists():
+            raise FileNotFoundError(f"Pattern file not found: {patterns_path}. Make sure to run the build_patterns.py script first.")
+            
         with open(patterns_path) as f:
             patterns = json.load(f)
         matcher = Idiomatcher(vocab)
