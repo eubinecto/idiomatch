@@ -32,7 +32,7 @@ class Idiomatcher(Matcher):
             ValueError: If slop value is not in the range [1,5]
         """
         # Validate slop value
-        if slop < 1 or slop > 5:   
+        if slop < 1 or slop > 3:   
             raise ValueError(f"Slop value must be between 1 and 5, got {slop}")
             
         logger.info(f"Loading pre-trained idiom matcher with SLOP={slop}...")

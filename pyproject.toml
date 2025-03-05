@@ -1,6 +1,6 @@
 [project]
 name = "idiomatch"
-version = "0.2.2"
+version = "0.2.5"
 description = "Spacy's Matcher specifically designed for matching English idioms"
 readme = "README.md"
 requires-python = ">=3.10,<=3.12"
@@ -25,4 +25,4 @@ packages = ["idiomatch"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-idiomatch = ["patterns.json"]
+idiomatch = ["patterns/*.json"]

@@ -6,5 +6,5 @@ TARGET_IDIOM_MIN_LENGTH = 14
 TARGET_IDIOM_MIN_WORD_COUNT = 3
 
 # slop value
-SLOP = 5
+SLOP = 3
 WILDCARD = r"[a-zA-Z0-9,\-\'\"]+"
