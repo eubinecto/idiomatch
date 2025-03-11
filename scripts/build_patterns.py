@@ -64,13 +64,6 @@ def main():
             except Exception as e:
                 logger.error(f"Error building patterns with SLOP={slop}: {e}")
     
-    # Also build with the default SLOP value and save to the original location
-    logger.info(f"Building patterns with default SLOP={DEFAULT_SLOP}")
-    patterns = build_idiom_patterns(idioms, nlp)
-    default_output_file = Path(__file__).parent.parent / "idiomatch" / "patterns.json"
-    with open(default_output_file, 'w') as f:
-        json.dump(patterns, f, indent=2)
-    logger.info(f"Successfully saved idiom patterns with default SLOP to {default_output_file}")
 
 
 if __name__ == '__main__':

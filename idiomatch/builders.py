@@ -62,15 +62,13 @@ def insert_slop(patterns: list[dict], n: int) -> list[dict]:
     Insert slop patterns between token patterns.
     (Implementation of intersperse: https://stackoverflow.com/a/5655780)
     """
-    slop_pattern = [{"TEXT": {"REGEX": WILDCARD}, "OP": "?"}] * n  # insert n number of slops
-    res = []
-    is_first = True
-    for pattern in patterns:
-        if not is_first:
-            res += slop_pattern
-        res.append(pattern)
-        is_first = False
-    return res
+    slop_pattern = {"TEXT": {"REGEX": WILDCARD}, "OP": "{," + str(n) + "}"}   # match at most n times
+    new_patterns: list[dict] = []
+    for i, pattern in enumerate(patterns):
+        new_patterns.append(pattern)
+        if i < len(patterns) - 1:
+            new_patterns.append(slop_pattern)
+    return new_patterns
 
 
 def reorder(idiom_tokens: list[Token]) -> list[Token]:
