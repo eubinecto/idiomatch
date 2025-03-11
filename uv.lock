@@ -203,7 +203,7 @@ wheels = [
 
 [[package]]
 name = "idiomatch"
-version = "0.2.6"
+version = "0.2.9"
 source = { editable = "." }
 dependencies = [
     { name = "loguru" },

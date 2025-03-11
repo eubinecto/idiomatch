@@ -197,3 +197,12 @@ def test_have_blood_on_ones_hands(nlp, idiomatcher):
     results = idiomatcher(nlp(sent))
     idioms = [match["idiom"] for match in results]
     assert "have blood on one's hands" in idioms
+
+
+def test_idioms_property(idiomatcher):
+    idioms = ['catch-22', 'blow-by-blow', 'balls-out', 'come down to earth', 'this, that, and the other']
+    for idiom in idioms:
+        assert idiom in idiomatcher.idioms
+
+    
+    

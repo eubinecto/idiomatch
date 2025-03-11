@@ -14,6 +14,11 @@ class Idiomatcher(Matcher):
     a matcher class for.. matching idioms.
     """
 
+    @property
+    def idioms(self) -> list[str]:
+        """Get all idioms that have been added to the matcher."""
+        return [self.vocab.strings[key] for key in self._patterns.keys()]
+
     @staticmethod
     def from_pretrained(vocab: Vocab, slop: int = 3) -> 'Idiomatcher':
         """
