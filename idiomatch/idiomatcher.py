@@ -49,7 +49,7 @@ class Idiomatcher(Matcher):
         matcher.add_idiom_patterns(patterns)
         return matcher
         
-    def __call__(self, doc: Doc) -> list[dict]:
+    def __call__(self, doc: Doc, greedy: bool = True) -> list[dict]:
         matches = super().__call__(doc)
         results = [
             {
@@ -59,6 +59,31 @@ class Idiomatcher(Matcher):
             }
             for token_id, start, end in matches
         ]
+        
+        if greedy and results:
+            # Sort matches by span length (descending)
+            # This prioritizes longer matches, which is what we want for greedy matching
+            results.sort(key=lambda x: (x['meta'][2] - x['meta'][1]), reverse=True)
+            
+            # Keep track of non-contained matches
+            filtered_results = []
+            
+            # Add the longest match first
+            filtered_results.append(results[0])
+            
+            # For each remaining match, check if it's contained in any accepted match
+            for match in results[1:]:
+                start, end = match['meta'][1], match['meta'][2]
+                is_contained = any(
+                    start >= f_match['meta'][1] and end <= f_match['meta'][2]
+                    for f_match in filtered_results
+                )
+                
+                if not is_contained:
+                    filtered_results.append(match)
+            
+            return filtered_results
+            
         return results
 
     def add_idiom_patterns(self, patterns: dict[str, list]):

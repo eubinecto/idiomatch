@@ -3,9 +3,8 @@ Tests for the Idiomatcher class with different slop values.
 """
 import pytest
 import spacy
-from spacy.matcher import Matcher
 from idiomatch import Idiomatcher
-from idiomatch.configs import NLP_MODEL, SLOP
+from idiomatch.configs import NLP_MODEL
 
 
 @pytest.fixture(scope="module")

@@ -52,7 +52,7 @@ def main():
     nlp = spacy.load("en_core_web_sm")
     idiomatcher = Idiomatcher.from_pretrained(nlp.vocab)  # instantiate 
     # As for a placeholder for openslot, use either: someone / something / someone's / one's 
-    idioms = ["have blood on one's hands", "on one's hands"]
+    idioms = ["have blood on one's hands"]
     idiomatcher.add_idioms(nlp, idioms)  # this will train idiomatcher to identify the given idioms
     sent = "The leaders of this war have the blood of many thousands of people on their hands."
     doc = nlp(sent)
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 ```
 100%|██████████| 2/2 [00:00<00:00, 145.62it/s]
 adding patterns into idiom_matcher...: 100%|██████████| 2/2 [00:00<00:00, 196.40it/s]
-[{'idiom': "have blood on one's hands", 'span': 'have the blood of many thousands of people on their hands', 'meta': (5930902300252675198, 5, 16)}, {'idiom': "on one's hands", 'span': 'on their hands', 'meta': (8246625119345375174, 13, 16)}]
+[{'idiom': "have blood on one's hands", 'span': 'have the blood of many thousands of people on their hands', 'meta': (5930902300252675198, 5, 16)}]
 ```
 
 ## Supported Variations
