@@ -204,5 +204,16 @@ def test_idioms_property(idiomatcher):
     for idiom in idioms:
         assert idiom in idiomatcher.idioms
 
+from loguru import logger
+    
+def test_start_end(nlp, idiomatcher):
+    sent = "what I know for sure is this. I can tell you that this is true"
+    doc = nlp(sent)
+    matches = idiomatcher(doc)
+    assert len(matches) == 1
+    match = matches[0]
+    logger.info(f"Match: {match}")
+    assert doc[match['meta'][1]:match['meta'][2]].text == "I can tell you"
+
     
     
