@@ -88,8 +88,8 @@ def reorder(idiom_tokens: list[Token]) -> list[Token]:
     return tokens
 
 
-def build_modification(idiom_tokens: list[Token], slop: int) -> list[dict]:
-    """Build pattern with slop."""
+def build_modification(idiom_tokens: list[Token], slop: int = 3) -> list[dict]:
+    """Build pattern with modifications."""
     pattern = [
         {"TAG": "PRP$"} if token.text in PRP_PLACEHOLDER_CASES  # one's, someone's
         else {"POS": "PRON"} if token.text in PRON_PLACEHOLDER_CASES  # someone.
@@ -97,7 +97,6 @@ def build_modification(idiom_tokens: list[Token], slop: int) -> list[dict]:
         else {"LEMMA": {"REGEX": r"(?i)^{}$".format(token.lemma_)}}
         for token in idiom_tokens
     ]
-    # insert slop over the pattern
     return insert_slop(pattern, slop)
 
 
@@ -115,10 +114,9 @@ def build_hyphenated(idiom_tokens: list[Token]) -> list[dict]:
     return [pattern]
 
 
-def build_openslot(idiom_tokens: list[Token], slop: int) -> list[dict]:
-    """Build pattern with wildcard and slop."""
+def build_openslot(idiom_tokens: list[Token], slop: int = 3) -> list[dict]:
+    """Build pattern with wildcard."""
     pattern = [
-        # use a wildcard for placeholder cases.
         {"TEXT": {"REGEX": WILDCARD}} if token.text in (PRP_PLACEHOLDER_CASES + PRON_PLACEHOLDER_CASES)
         else {"TEXT": token.text, "OP": "?"} if token.text in OPTIONAL_CASES
         else {"LEMMA": {"REGEX": r"(?i)^{}$".format(token.lemma_)}}
@@ -127,25 +125,26 @@ def build_openslot(idiom_tokens: list[Token], slop: int) -> list[dict]:
     return insert_slop(pattern, slop)
 
 
-def build_passivisation_with_modification(idiom_tokens: list[Token], slop: int) -> list[dict]:
-    """Build pattern with reordering and slop."""
+def build_passivisation_with_modification(idiom_tokens: list[Token], slop: int = 3) -> list[dict]:
+    """Build pattern with reordering."""
     tokens = reorder(idiom_tokens)
     return build_modification(tokens, slop)
 
 
-def build_passivisation_with_openslot(idiom_tokens: list[Token], slop: int) -> list[dict]:
-    """Build pattern with reordering, wildcard, and slop."""
+def build_passivisation_with_openslot(idiom_tokens: list[Token], slop: int = 3) -> list[dict]:
+    """Build pattern with reordering and wildcard."""
     tokens = reorder(idiom_tokens)
     return build_openslot(tokens, slop)
 
 
-def build_idiom_patterns(idioms: list[str], nlp: Language, slop: int) -> dict[str, list]:
+def build_idiom_patterns(idioms: list[str], nlp: Language, slop: int = 3) -> dict[str, list]:
     """
     Build patterns for a list of idioms.
     
     Args:
         idioms: list of idioms to process
         nlp: Spacy Language model
+        slop: maximum number of words allowed between pattern tokens (default: 3)
         
     Returns:
         dictionary mapping idioms to their patterns

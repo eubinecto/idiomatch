@@ -2,13 +2,12 @@ import pytest
 import spacy
 from spacy.matcher import Matcher
 from idiomatch.builders import (
-    norm_case, is_target, prepare_idioms, add_special_tok_cases,
+    prepare_idioms, add_special_tok_cases,
     insert_slop, reorder, build_modification, build_hyphenated,
     build_openslot, build_passivisation_with_modification,
     build_passivisation_with_openslot, build_idiom_patterns
 )
-from idiomatch.configs import SLOP, NLP_MODEL
-from idiomatch.cases import MORE_IDIOM_CASES
+from idiomatch.configs import NLP_MODEL
 
 
 @pytest.fixture(scope="module")
@@ -71,7 +70,7 @@ def nlp():
 def test_insert_slop(nlp):
     # what should this be able to match?
     pattern = [{"LOWER": "hello"}, {"LOWER": "world"}]
-    pattern = insert_slop(pattern, SLOP)
+    pattern = insert_slop(pattern, 3)
     lemma = "HelloWorld"
     matcher = Matcher(nlp.vocab)
     matcher.add(lemma, [pattern])

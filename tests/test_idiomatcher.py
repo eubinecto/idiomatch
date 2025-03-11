@@ -33,7 +33,7 @@ def idiomatcher(nlp):
 def test_identify_two_idioms(nlp, idiomatcher):
     sent = "Try running, you'll have blood on your hands."
     doc = nlp(sent)
-    results = idiomatcher(doc)
+    results = idiomatcher(doc, greedy=False)
     
     # Check that we have at least 2 results
     assert len(results) >= 2
