@@ -4,7 +4,7 @@ from tqdm import tqdm
 from idiomatch.configs import \
     TARGET_IDIOM_MIN_LENGTH, \
     TARGET_IDIOM_MIN_WORD_COUNT, \
-    SLOP, WILDCARD
+    WILDCARD
 
 from idiomatch.cases import \
     IGNORED_CASES, \
@@ -60,15 +60,20 @@ def add_special_tok_cases(nlp: Language) -> None:
 def insert_slop(patterns: list[dict], n: int) -> list[dict]:
     """
     Insert slop patterns between token patterns.
-    (Implementation of intersperse: https://stackoverflow.com/a/5655780)
+    The slop value n determines the maximum number of words that can appear
+    between tokens in the idiom. For example:
+    - With slop=1: "I can [1 word] tell you" is matched, but "I can [2 words] tell you" is not.
+    - With slop=3: "I can [up to 3 words] tell you" is matched, but "I can [4+ words] tell you" is not.
+    - With slop=5: "I can [up to 5 words] tell you" is matched, but "I can [6+ words] tell you" is not.
     """
-    slop_pattern = {"TEXT": {"REGEX": WILDCARD}, "OP": "{," + str(n) + "}"}   # match at most n times
-    new_patterns: list[dict] = []
-    for i, pattern in enumerate(patterns):
-        new_patterns.append(pattern)
+    new = []
+    # For each token pair, add appropriate slop between them
+    for i in range(len(patterns)):
+        new.append(patterns[i])
         if i < len(patterns) - 1:
-            new_patterns.append(slop_pattern)
-    return new_patterns
+            # For higher slop values, we need 0 to n words
+            new.append({"TEXT": {"REGEX": WILDCARD}, "OP": "{0," + str(n) + "}"})        
+    return new
 
 
 def reorder(idiom_tokens: list[Token]) -> list[Token]:
@@ -83,7 +88,7 @@ def reorder(idiom_tokens: list[Token]) -> list[Token]:
     return tokens
 
 
-def build_modification(idiom_tokens: list[Token]) -> list[dict]:
+def build_modification(idiom_tokens: list[Token], slop: int) -> list[dict]:
     """Build pattern with slop."""
     pattern = [
         {"TAG": "PRP$"} if token.text in PRP_PLACEHOLDER_CASES  # one's, someone's
@@ -93,7 +98,7 @@ def build_modification(idiom_tokens: list[Token]) -> list[dict]:
         for token in idiom_tokens
     ]
     # insert slop over the pattern
-    return insert_slop(pattern, SLOP)
+    return insert_slop(pattern, slop)
 
 
 def build_hyphenated(idiom_tokens: list[Token]) -> list[dict]:
@@ -110,7 +115,7 @@ def build_hyphenated(idiom_tokens: list[Token]) -> list[dict]:
     return [pattern]
 
 
-def build_openslot(idiom_tokens: list[Token]) -> list[dict]:
+def build_openslot(idiom_tokens: list[Token], slop: int) -> list[dict]:
     """Build pattern with wildcard and slop."""
     pattern = [
         # use a wildcard for placeholder cases.
@@ -119,22 +124,22 @@ def build_openslot(idiom_tokens: list[Token]) -> list[dict]:
         else {"LEMMA": {"REGEX": r"(?i)^{}$".format(token.lemma_)}}
         for token in idiom_tokens
     ]
-    return insert_slop(pattern, SLOP)
+    return insert_slop(pattern, slop)
 
 
-def build_passivisation_with_modification(idiom_tokens: list[Token]) -> list[dict]:
+def build_passivisation_with_modification(idiom_tokens: list[Token], slop: int) -> list[dict]:
     """Build pattern with reordering and slop."""
     tokens = reorder(idiom_tokens)
-    return build_modification(tokens)
+    return build_modification(tokens, slop)
 
 
-def build_passivisation_with_openslot(idiom_tokens: list[Token]) -> list[dict]:
+def build_passivisation_with_openslot(idiom_tokens: list[Token], slop: int) -> list[dict]:
     """Build pattern with reordering, wildcard, and slop."""
     tokens = reorder(idiom_tokens)
-    return build_openslot(tokens)
+    return build_openslot(tokens, slop)
 
 
-def build_idiom_patterns(idioms: list[str], nlp: Language) -> dict[str, list]:
+def build_idiom_patterns(idioms: list[str], nlp: Language, slop: int) -> dict[str, list]:
     """
     Build patterns for a list of idioms.
     
@@ -153,10 +158,10 @@ def build_idiom_patterns(idioms: list[str], nlp: Language) -> dict[str, list]:
         
         # Build all pattern types
         pattern_groups = [
-            build_modification(idiom_tokens),
-            build_openslot(idiom_tokens),
-            build_passivisation_with_modification(idiom_tokens),
-            build_passivisation_with_openslot(idiom_tokens)
+            build_modification(idiom_tokens, slop),
+            build_openslot(idiom_tokens, slop),
+            build_passivisation_with_modification(idiom_tokens, slop),
+            build_passivisation_with_openslot(idiom_tokens, slop)
         ]
         
         # Handle hyphenated separately as it may return a list of patterns

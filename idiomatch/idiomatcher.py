@@ -7,7 +7,6 @@ from tqdm import tqdm
 from pathlib import Path
 from loguru import logger
 from idiomatch.builders import build_idiom_patterns
-from idiomatch.configs import SLOP
 
 
 class Idiomatcher(Matcher):
@@ -16,7 +15,7 @@ class Idiomatcher(Matcher):
     """
 
     @staticmethod
-    def from_pretrained(vocab: Vocab, slop: int = SLOP) -> 'Idiomatcher':
+    def from_pretrained(vocab: Vocab, slop: int = 3) -> 'Idiomatcher':
         """
         Load a pre-trained idiom matcher, which can identify more than 2000 English idioms.
         

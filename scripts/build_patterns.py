@@ -3,22 +3,12 @@ import spacy
 from idiomatch.builders import build_idiom_patterns
 from loguru import logger
 from pathlib import Path
-import os
-from idiomatch.configs import SLOP as DEFAULT_SLOP
 import concurrent.futures
 
 def build_patterns_with_slop(idioms, nlp, slop_value):
     """Build patterns with a specific slop value."""
-    # Temporarily override the SLOP value in the module
-    import idiomatch.configs
-    original_slop = idiomatch.configs.SLOP
-    idiomatch.configs.SLOP = slop_value
-    
     # Build patterns with the modified SLOP value
-    patterns = build_idiom_patterns(idioms, nlp)
-    
-    # Restore the original SLOP value
-    idiomatch.configs.SLOP = original_slop
+    patterns = build_idiom_patterns(idioms, nlp, slop_value)
     
     return patterns
 
