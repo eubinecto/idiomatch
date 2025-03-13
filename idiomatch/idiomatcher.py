@@ -46,9 +46,16 @@ class Idiomatcher(Matcher):
             raise ValueError(f"Slop value must be between 1 and 5, got {n}")
         
         logger.info(f"Loading an nlp model to use with the matcher ({NLP_MODEL})...")
-        # must be done for cases like catch-22
-        nlp = spacy.load(NLP_MODEL)
-        add_special_tok_cases(nlp)
+        try:
+            # must be done for cases like catch-22
+            nlp = spacy.load(NLP_MODEL)
+            add_special_tok_cases(nlp)
+        except OSError:
+            raise OSError(
+                f"Could not find the spaCy model '{NLP_MODEL}'. "
+                "Please download it first by running:\n"
+                f"python -m spacy download {NLP_MODEL}"
+            )
 
         logger.info(f"Loading patterns with SLOP={n}...")
         # Determine which pattern file to load
