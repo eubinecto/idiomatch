@@ -1,14 +1,14 @@
 import json
 import spacy
-from idiomatch.builders import build_idiom_patterns
+from idiomatch.builders import build
 from loguru import logger
 from pathlib import Path
 import concurrent.futures
 
-def build_patterns_with_slop(idioms, nlp, slop_value):
+def build_patterns_with_slop(idioms, nlp, n):
     """Build patterns with a specific slop value."""
     # Build patterns with the modified SLOP value
-    patterns = build_idiom_patterns(idioms, nlp, slop_value)
+    patterns = build(idioms, nlp, n)
     
     return patterns
 
@@ -42,17 +42,17 @@ def main():
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Submit all tasks
         future_to_slop = {
-            executor.submit(build_and_save_patterns, slop, idioms, nlp, patterns_dir): slop
-            for slop in range(1, 6)
+            executor.submit(build_and_save_patterns, n, idioms, nlp, patterns_dir): n
+            for n in range(1, 6)
         }
         
         # Process results as they complete
         for future in concurrent.futures.as_completed(future_to_slop):
-            slop = future_to_slop[future]
+            n = future_to_slop[future]
             try:
                 future.result()
             except Exception as e:
-                logger.error(f"Error building patterns with SLOP={slop}: {e}")
+                logger.error(f"Error building patterns with n={n}(SLOP): {e}")
     
 
 

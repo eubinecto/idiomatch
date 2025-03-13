@@ -1,12 +1,15 @@
 from pathlib import Path
 from langcodes import Language
 from spacy.matcher.matcher import Matcher
-from spacy.vocab import Vocab
 from spacy.tokens.doc import Doc
+from spacy import Language
 from tqdm import tqdm
+import spacy
 from pathlib import Path
 from loguru import logger
-from idiomatch.builders import build_idiom_patterns
+from .builders import build
+from .configs import NLP_MODEL
+from .builders import add_special_tok_cases
 
 
 class Idiomatcher(Matcher):
@@ -14,43 +17,53 @@ class Idiomatcher(Matcher):
     a matcher class for.. matching idioms.
     """
 
+    def __init__(self, nlp: Language, n: int):
+        super().__init__(nlp.vocab)
+        # we must maintain an nlp model here
+        self.nlp = nlp
+        self.n = n  # slop val
+
     @property
     def idioms(self) -> list[str]:
         """Get all idioms that have been added to the matcher."""
         return [self.vocab.strings[key] for key in self._patterns.keys()]
 
     @staticmethod
-    def from_pretrained(vocab: Vocab, slop: int = 3) -> 'Idiomatcher':
+    def from_pretrained(n: int = 1) -> 'Idiomatcher':
         """
         Load a pre-trained idiom matcher, which can identify more than 2000 English idioms.
         
         Args:
-            vocab: spaCy vocabulary
             slop: The slop value to use (1-5). If None, use the default from configs.SLOP
                   This determines which pattern file to load.
-        
         Returns:
             An initialized Idiomatcher
-            
         Raises:
             ValueError: If slop value is not in the range [1,5]
         """
         # Validate slop value
-        if slop < 1 or slop > 5:   
-            raise ValueError(f"Slop value must be between 1 and 5, got {slop}")
-            
-        logger.info(f"Loading pre-trained idiom matcher with SLOP={slop}...")
+        if n < 1 or n > 5:   
+            raise ValueError(f"Slop value must be between 1 and 5, got {n}")
+        
+        logger.info(f"Loading an nlp model to use with the matcher ({NLP_MODEL})...")
+        # must be done for cases like catch-22
+        nlp = spacy.load(NLP_MODEL)
+        add_special_tok_cases(nlp)
+
+        logger.info(f"Loading patterns with SLOP={n}...")
         # Determine which pattern file to load
         import json
-        patterns_path = Path(__file__).parent / "patterns" / f"slop_{slop}.json"
+        patterns_path = Path(__file__).parent / "patterns" / f"slop_{n}.json"
             
         if not patterns_path.exists():
             raise FileNotFoundError(f"Pattern file not found: {patterns_path}. Make sure to run the build_patterns.py script first.")
             
         with open(patterns_path) as f:
             patterns = json.load(f)
-        matcher = Idiomatcher(vocab)
-        matcher.add_idiom_patterns(patterns)
+        matcher = Idiomatcher(nlp, n)
+        for idiom, patterns in tqdm(patterns.items(),
+                                    desc="adding patterns"):
+            matcher.add(idiom, patterns)
         return matcher
         
     def __call__(self, doc: Doc, greedy: bool = True) -> list[dict]:
@@ -70,36 +83,29 @@ class Idiomatcher(Matcher):
             results.sort(key=lambda x: (x['meta'][2] - x['meta'][1]), reverse=True)
             
             # Keep track of non-contained matches
-            filtered_results = []
-            
+            new = []
             # Add the longest match first
-            filtered_results.append(results[0])
-            
+            new.append(results[0])
             # For each remaining match, check if it's contained in any accepted match
             for match in results[1:]:
                 start, end = match['meta'][1], match['meta'][2]
                 is_contained = any(
                     start >= f_match['meta'][1] and end <= f_match['meta'][2]
-                    for f_match in filtered_results
+                    for f_match in new
                 )
-                
                 if not is_contained:
-                    filtered_results.append(match)
-            
-            return filtered_results
-            
+                    new.append(match)
+            return new
         return results
+        
 
-    def add_idiom_patterns(self, patterns: dict[str, list]):
-        for idiom, patterns in tqdm(patterns.items(),
-                                    desc="adding patterns"):
-            self.add(idiom, patterns)
-
-
-    def add_idioms(self, nlp: Language, idioms: list[str]):
+    def add_idioms(self, idioms: list[str]):
         """
-        Build patterns for the given idiom and add the patterns into the matcher.
+        Build patterns for the given idiom and add them into the matcher.
         """
         # build patterns here.
-        patterns = build_idiom_patterns(idioms, nlp)
-        self.add_idiom_patterns(patterns)
+        patterns = build(idioms, self.nlp, self.n)
+        for idiom, patterns in tqdm(patterns.items(),
+                                    desc="adding patterns"):
+            super().add(idiom, patterns)
+

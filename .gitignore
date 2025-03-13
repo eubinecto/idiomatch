@@ -137,3 +137,4 @@ idiomatchenv
 .uv/
 .uvenv/
 .env.local
+playground/

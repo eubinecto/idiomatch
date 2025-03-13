@@ -12,10 +12,9 @@ OPTIONAL_CASES = [
 SPECIAL_TOK_CASES = {
     "one's": [{"ORTH": "one's"}],
     "someone's": [{"ORTH": "someone's"}],
-    # TODO: is this really the only way?
+    # TODO: is this really the only way? - I see.... so that was the problem, huh?
     "catch-22": [{"ORTH": "catch"}, {"ORTH": "-"}, {"ORTH": "22"}],
     "Catch-22": [{"ORTH": "Catch"}, {"ORTH": "-"}, {"ORTH": "22"}],  # also need a capitalised case.
-
 }
 
 

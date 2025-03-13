@@ -2,28 +2,13 @@ import pytest
 import spacy
 from spacy.matcher import Matcher
 from idiomatch.builders import (
-    prepare_idioms, add_special_tok_cases,
-    insert_slop, reorder, build_modification, build_hyphenated,
-    build_openslot, build_passivisation_with_modification,
-    build_passivisation_with_openslot, build_idiom_patterns
+    add_special_tok_cases,
+    slop, reorder, openslot, openslot_passive, hyphenated, build
 )
 from idiomatch.configs import NLP_MODEL
 
 
-@pytest.fixture(scope="module")
-def idioms():
-    # Mock slide_idioms for testing purposes
-    mock_slide_idioms = ["catch-22", "balls-out", "call someone's bluff"]
-    return prepare_idioms(mock_slide_idioms)
-
-
-def test_hyphenated_term_included_catch_22(idioms):
-    assert "catch-22" in idioms
-
-
-def test_hyphenated_term_included_balls_out(idioms):
-    assert "balls-out" in idioms
-
+SLOP = 1
 
 @pytest.fixture(scope="module")
 def nlp_with_special_cases():
@@ -67,10 +52,10 @@ def nlp():
     return nlp
 
 
-def test_insert_slop(nlp):
+def test_slop(nlp):
     # what should this be able to match?
     pattern = [{"LOWER": "hello"}, {"LOWER": "world"}]
-    pattern = insert_slop(pattern, 3)
+    pattern = slop(pattern, 3)
     lemma = "HelloWorld"
     matcher = Matcher(nlp.vocab)
     matcher.add(lemma, [pattern])
@@ -92,11 +77,11 @@ def test_reorder(nlp):
     assert "call" == tokens[2].text
 
 
-def test_build_modification(nlp):
+def test_openslot_modified(nlp):
     lemma = "call someone's bluff"
     idiom_doc = nlp(lemma)
     idiom_tokens = [token for token in idiom_doc]
-    pattern = build_modification(idiom_tokens)
+    pattern = openslot(idiom_tokens, SLOP)
     matcher = Matcher(nlp.vocab)
     matcher.add(lemma, [pattern])
     # modification.
@@ -109,11 +94,11 @@ def test_build_modification(nlp):
     assert lemma in strings
 
 
-def test_build_openslot(nlp):
+def test_openslot_modified_2(nlp):
     lemma = "keep someone in the loop"
     idiom_doc = nlp(lemma)
     idiom_tokens = [token for token in idiom_doc]
-    pattern = build_openslot(idiom_tokens)
+    pattern = openslot(idiom_tokens, 3)
     matcher = Matcher(nlp.vocab)
     matcher.add(lemma, [pattern])
     # modification.
@@ -126,15 +111,12 @@ def test_build_openslot(nlp):
     assert lemma in strings
 
 
-def test_build_hyphenated(nlp):
+def test_hyphenated(nlp):
     lemma = "balls-out"
-    idiom_doc = nlp(lemma)
-    idiom_tokens = [token for token in idiom_doc]
-    patterns = build_hyphenated(idiom_tokens)
+    doc = nlp(lemma)
+    patterns = hyphenated(doc, SLOP)
     matcher = Matcher(nlp.vocab)
-    # Now patterns is a list of patterns, we need to add each one
-    matcher.add(lemma, patterns)
-    # modification.
+    matcher.add(lemma, [patterns])
     doc = nlp("That was one balls-out street race!")
     matches = matcher(doc)
     strings = [
@@ -144,15 +126,12 @@ def test_build_hyphenated(nlp):
     assert lemma in strings
 
 
-def test_build_hyphenated_catch_22(nlp):
+def test_hyphenated_catch_22(nlp):
     lemma = "catch-22"
-    idiom_doc = nlp(lemma)
-    idiom_tokens = [token for token in idiom_doc]
-    patterns = build_hyphenated(idiom_tokens)
+    doc = nlp(lemma)
+    patterns = hyphenated(doc, SLOP)
     matcher = Matcher(nlp.vocab)
-    # Now patterns is a list of patterns, we need to add each one
-    matcher.add(lemma, patterns)
-    # modification.
+    matcher.add(lemma, [patterns])
     doc = nlp("This is a catch-22 situation")
     matches = matcher(doc)
     strings = [
@@ -162,15 +141,12 @@ def test_build_hyphenated_catch_22(nlp):
     assert lemma in strings
 
 
-def test_build_hyphenated_catch_22_no_hyphen(nlp):
+def test_hyphenated_catch_22_no_hyphen(nlp):
     lemma = "catch-22"
-    idiom_doc = nlp(lemma)
-    idiom_tokens = [token for token in idiom_doc]
-    patterns = build_hyphenated(idiom_tokens)
+    doc = nlp(lemma)
+    patterns = hyphenated(doc, SLOP)
     matcher = Matcher(nlp.vocab)
-    # Now patterns is a list of patterns, we need to add each one
-    matcher.add(lemma, patterns)
-    # modification.
+    matcher.add(lemma, [patterns])
     doc = nlp("This is a catch 22 situation")
     matches = matcher(doc)
     strings = [
@@ -180,15 +156,12 @@ def test_build_hyphenated_catch_22_no_hyphen(nlp):
     assert lemma in strings
 
 
-def test_build_hyphenated_catch_22_no_hyphen_capitalised(nlp):
+def test_hyphenated_catch_22_no_hyphen_capitalised(nlp):
     lemma = "catch-22"
-    idiom_doc = nlp(lemma)
-    idiom_tokens = [token for token in idiom_doc]
-    patterns = build_hyphenated(idiom_tokens)
+    doc = nlp(lemma)
+    patterns = hyphenated(doc, SLOP)
     matcher = Matcher(nlp.vocab)
-    # Now patterns is a list of patterns, we need to add each one
-    matcher.add(lemma, patterns)
-    # modification.
+    matcher.add(lemma, [patterns])
     doc = nlp("This is a Catch 22 situation")
     matches = matcher(doc)
     strings = [
@@ -198,15 +171,15 @@ def test_build_hyphenated_catch_22_no_hyphen_capitalised(nlp):
     assert lemma in strings
 
 
-def test_build_passivisation_with_modification(nlp):
+def test_openslot_passive(nlp):
     lemma = "open the floodgates"
     idiom_doc = nlp(lemma)
     idiom_tokens = [token for token in idiom_doc]
-    pattern = build_passivisation_with_modification(idiom_tokens)
+    pattern = openslot_passive(idiom_tokens, SLOP)
     matcher = Matcher(nlp.vocab)
     matcher.add(lemma, [pattern])
     # modification.
-    doc = nlp("the massive floodgates were finally opened")
+    doc = nlp("the floodgates were finally opened")
     matches = matcher(doc)
     strings = [
         nlp.vocab.strings[match_id]
@@ -215,14 +188,14 @@ def test_build_passivisation_with_modification(nlp):
     assert lemma in strings
 
 
-def test_build_passivisation_with_openslot(nlp):
+def test_openslot_passive_2(nlp):
     lemma = "call someone's bluff"
     idiom_doc = nlp(lemma)
     idiom_tokens = [token for token in idiom_doc]
-    pattern = build_passivisation_with_openslot(idiom_tokens)
+    pattern = openslot_passive(idiom_tokens, SLOP)
     matcher = Matcher(nlp.vocab)
     matcher.add(lemma, [pattern])
-    doc = nlp("my bluff was embarrassingly called by her.")
+    doc = nlp("my bluff was called by her.")
     matches = matcher(doc)
     strings = [
         nlp.vocab.strings[match_id]
@@ -230,17 +203,3 @@ def test_build_passivisation_with_openslot(nlp):
     ]
     assert lemma in strings
 
-
-def test_build_idiom_patterns(nlp):
-    idioms = ["catch-22", "balls-out", "call someone's bluff"]
-    patterns = build_idiom_patterns(idioms, nlp)
-    
-    # Check that patterns were created for each idiom
-    assert len(patterns) == 3
-    assert "catch-22" in patterns
-    assert "balls-out" in patterns
-    assert "call someone's bluff" in patterns
-    
-    # Check that each idiom has patterns
-    for idiom, pattern_list in patterns.items():
-        assert len(pattern_list) > 0

@@ -206,27 +206,25 @@ name = "idiomatch"
 version = "0.2.9"
 source = { editable = "." }
 dependencies = [
+    { name = "en-core-web-sm" },
     { name = "loguru" },
     { name = "spacy" },
 ]
 
 [package.dev-dependencies]
 dev = [
-    { name = "en-core-web-sm" },
     { name = "pytest" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "en-core-web-sm", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "spacy", specifier = ">=3.8.4" },
 ]
 
 [package.metadata.requires-dev]
-dev = [
-    { name = "en-core-web-sm", url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" },
-    { name = "pytest", specifier = ">=8.3.5" },
-]
+dev = [{ name = "pytest", specifier = ">=8.3.5" }]
 
 [[package]]
 name = "idna"
