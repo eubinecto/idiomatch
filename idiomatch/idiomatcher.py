@@ -94,7 +94,6 @@ class Idiomatcher(Matcher):
             # Sort matches by span length (descending)
             # This prioritizes longer matches, which is what we want for greedy matching
             results.sort(key=lambda x: (x['meta'][2] - x['meta'][1]), reverse=True)
-            
             # Keep track of non-contained matches
             new = []
             # Add the longest match first
