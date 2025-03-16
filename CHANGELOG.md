@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.14] - 2024-03-24
+
+### Changed
+- Modified Idiom model to make etymology and source fields optional
+- Enhanced `add_idioms` method to accept structured idiom dictionaries and validate duplicates
+- Improved test coverage for idiom addition and greedy matching functionality
+
 ## [0.2.13] - 2024-03-24
 
 ### Fixed
