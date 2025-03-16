@@ -111,12 +111,33 @@ class Idiomatcher(Matcher):
         return results
         
 
-    def add_idioms(self, idioms: list[str]):
+    def add_idioms(self, idioms: list[dict]):
         """
         Build patterns for the given idiom and add them into the matcher.
+        
+        Args:
+            idioms: List of idiom dictionaries to add
+            
+        Raises:
+            ValueError: If any of the idioms already exist in the matcher
         """
-        # build patterns here.
-        patterns = build(idioms, self.nlp, self.n)
+        new_idioms = []
+        duplicates = []
+        for idiom_dict in idioms:
+            idiom = Idiom(**idiom_dict)
+            # Check if idiom already exists by comparing lemmas
+            if any(existing.lemma == idiom.lemma for existing in self.idioms):
+                duplicates.append(idiom.lemma)
+                continue
+            new_idioms.append(idiom)
+
+        if duplicates:
+            raise ValueError(f"The following idioms already exist in the matcher: {', '.join(duplicates)}")
+
+        # add new idioms to the matcher
+        self.idioms.extend(new_idioms)
+        # build patterns and add them to the matcher
+        patterns = build([idiom.lemma for idiom in new_idioms], self.nlp, self.n)
         for idiom, patterns in tqdm(patterns.items(),
                                     desc="adding patterns"):
             super().add(idiom, patterns)

@@ -4,6 +4,6 @@ from ._sense import Sense
 
 class Idiom(BaseModel):
     lemma: str
-    etymology: str | None
     senses: list[Sense]
-    source: str
+    etymology: str | None = None
+    source: str | None = None
