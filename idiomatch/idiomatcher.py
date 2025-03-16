@@ -1,14 +1,14 @@
-from pathlib import Path
 from langcodes import Language
 from spacy.matcher.matcher import Matcher
 from spacy.tokens.doc import Doc
 from spacy import Language
 from tqdm import tqdm
 import spacy
-from pathlib import Path
 from loguru import logger
+import yaml
+from ._models._idiom import Idiom
 from .builders import build
-from .configs import NLP_MODEL
+from .configs import NLP_MODEL, RESOURCES_DIR
 from .builders import add_special_tok_cases
 
 
@@ -17,16 +17,12 @@ class Idiomatcher(Matcher):
     a matcher class for.. matching idioms.
     """
 
-    def __init__(self, nlp: Language, n: int):
+    def __init__(self, nlp: Language, n: int, idioms: list[Idiom]):
         super().__init__(nlp.vocab)
         # we must maintain an nlp model here
         self.nlp = nlp
-        self.n = n  # slop val
-
-    @property
-    def idioms(self) -> list[str]:
-        """Get all idioms that have been added to the matcher."""
-        return [self.vocab.strings[key] for key in self._patterns.keys()]
+        self.n = n  # slop value
+        self.idioms = idioms
 
     @staticmethod
     def from_pretrained(n: int = 1) -> 'Idiomatcher':
@@ -49,25 +45,35 @@ class Idiomatcher(Matcher):
         try:
             # must be done for cases like catch-22
             nlp = spacy.load(NLP_MODEL)
-            add_special_tok_cases(nlp)
         except OSError:
-            raise OSError(
-                f"Could not find the spaCy model '{NLP_MODEL}'. "
-                "Please download it first by running:\n"
-                f"python -m spacy download {NLP_MODEL}"
-            )
+            logger.info(f"Model '{NLP_MODEL}' not found. Downloading it now...")
+            try:
+                spacy.cli.download(NLP_MODEL)
+                logger.info(f"Successfully downloaded {NLP_MODEL}")
+                nlp = spacy.load(NLP_MODEL)
+            except Exception as e:
+                raise OSError(
+                    f"Failed to download spaCy model '{NLP_MODEL}'. Error: {str(e)}\n"
+                    "Please try downloading it manually by running:\n"
+                    f"python -m spacy download {NLP_MODEL}"
+                )
+        # then add special tokenization cases
+        add_special_tok_cases(nlp)
 
         logger.info(f"Loading patterns with SLOP={n}...")
         # Determine which pattern file to load
         import json
-        patterns_path = Path(__file__).parent / "patterns" / f"slop_{n}.json"
+        patterns_path = RESOURCES_DIR / f"slop_{n}.json"
             
         if not patterns_path.exists():
             raise FileNotFoundError(f"Pattern file not found: {patterns_path}. Make sure to run the build_patterns.py script first.")
-            
+
+        with open(RESOURCES_DIR / "idioms.yml") as f:
+            idioms_data = yaml.safe_load(f)
+        idioms = [Idiom(**idiom_data) for idiom_data in idioms_data]
+        matcher = Idiomatcher(nlp, n, idioms)
         with open(patterns_path) as f:
             patterns = json.load(f)
-        matcher = Idiomatcher(nlp, n)
         for idiom, patterns in tqdm(patterns.items(),
                                     desc="adding patterns"):
             matcher.add(idiom, patterns)

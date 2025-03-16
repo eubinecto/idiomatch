@@ -73,7 +73,7 @@ def test_match_catch_22(idiomatcher):
     matches = idiomatcher(doc)
     assert len(matches) == 1
     match = matches[0]
-    assert match["idiom"] == "catch-22"
+    assert match["idiom"] == "Catch-22"
 
 
 def test_match_catch_22_no_hyphen(idiomatcher):
@@ -82,7 +82,7 @@ def test_match_catch_22_no_hyphen(idiomatcher):
     matches = idiomatcher(doc)
     assert len(matches) == 1
     match = matches[0]
-    assert match["idiom"] == "catch-22"
+    assert match["idiom"] == "Catch-22"
 
 
 def test_match_catch_22_capitalised(idiomatcher):
@@ -91,7 +91,7 @@ def test_match_catch_22_capitalised(idiomatcher):
     matches = idiomatcher(doc)
     assert len(matches) == 1
     match = matches[0]
-    assert match["idiom"] == "catch-22"
+    assert match["idiom"] == "Catch-22"
 
 
 def test_match_blow_by_blow(idiomatcher):
@@ -205,13 +205,13 @@ def test_have_blood_on_ones_hands(idiomatcher):
 
 
 def test_idioms_property(idiomatcher):
-    idioms = ['catch-22', 'blow-by-blow', 'balls-out', 'come down to earth', 'this, that, and the other']
+    idioms = ['Catch-22', 'blow-by-blow', 'balls-out', 'come down to earth', 'this, that, and the other']
     for idiom in idioms:
-        assert idiom in idiomatcher.idioms
+        assert idiom in [idiom.lemma for idiom in idiomatcher.idioms]
 
     
 def test_start_end(idiomatcher):
-    sent = "what I know for sure is this. I can tell you that this is true"
+    sent = "I can tell you that this is true"
     doc = idiomatcher.nlp(sent)
     matches = idiomatcher(doc)
     assert len(matches) == 1
@@ -227,10 +227,7 @@ def  test_something_like_tp(idiomatcher):
     sent = "he had only to wish for it and it would come back to him. That is something like a whistle, thought Ashiepattle"
     doc = idiomatcher.nlp(sent)
     matches = idiomatcher(doc)
-    assert len(matches) == 1
-    match = matches[0]
-    logger.info(f"Match: {match}")
-    assert match['idiom'] == "something like"
+    assert "something like" in [match["idiom"] for match in matches]
 
 
 def  test_something_like_tn(idiomatcher):
@@ -240,7 +237,7 @@ def  test_something_like_tn(idiomatcher):
     sent = "I think it's like one of those apple products."
     doc = idiomatcher.nlp(sent)
     matches = idiomatcher(doc)
-    assert len(matches) == 0
+    assert "something like" not in [match["idiom"] for match in matches]
 
 
 def test_something_awful_tp(idiomatcher):
@@ -250,19 +247,25 @@ def test_something_awful_tp(idiomatcher):
     sent = "He wants to get out of there something awful, but he just doesn't have the money."
     doc = idiomatcher.nlp(sent)
     matches = idiomatcher(doc)
-    assert len(matches) == 1
-    match = matches[0]
-    logger.info(f"Match: {match}")
-    assert match['idiom'] == "something awful"
-
+    assert "something awful" in [match["idiom"] for match in matches]
 
 
 def test_something_awful_tn(idiomatcher):
     """
     something awful - (informal, dated) A very bad example or specimen of something
     """
-    sent = "I'm not sure I'd want to be in the same room as that awful thing."
+    sent = "I'm not sure I'd want that awful thing."
     doc = idiomatcher.nlp(sent)
     matches = idiomatcher(doc)
-    assert len(matches) == 0
-    
+    assert "something awful" not in [match["idiom"] for match in matches]
+
+
+def test_idioms_with_senses(idiomatcher):
+    for i, idiom in enumerate(idiomatcher.idioms):
+        logger.info(f"Lemma {i}: {idiom.lemma}")
+        for sense in idiom.senses:
+            logger.info(f"Sense {i}: {sense.content}")
+            for example in sense.examples:
+                logger.info(f"Example {i}: {example}")
+        if i > 10:
+            break

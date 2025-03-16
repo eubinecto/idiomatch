@@ -6,14 +6,21 @@ readme = "README.md"
 requires-python = ">=3.10,<=3.12"
 dependencies = [
     "spacy>=3.8.4",
-    "loguru>=0.7.3"
-    
+    "loguru>=0.7.3",
+    "pyyaml>=6.0.2",
+    "pydantic>=2.10.6"
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=8.3.5",
     "en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl",
+    "pandas>=2.2.3",
+    "requests>=2.32.3",
+    "python-dotenv>=1.0.1",
+    "openai>=1.66.3",
+    "beautifulsoup4>=4.13.3",
+    "click>=8.1.8"
 ]
 
 [build-system]
@@ -25,4 +32,4 @@ packages = ["idiomatch"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-idiomatch = ["patterns/*.json"]
+idiomatch = ["resources/*.json", "resources/idioms.yml"]

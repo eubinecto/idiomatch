@@ -126,32 +126,32 @@ def default(tokens: list[Token], n: int) -> list[dict]:
     return slop(patterns, n)
 
 
-def build(idioms: list[str], nlp: Language, n: int) -> dict[str, list]:
+def build(lemmas: list[str], nlp: Language, n: int) -> dict[str, list]:
     """
     Build patterns for a list of idioms.
     
     Args:
-        idioms: list of idioms to process
+        lemmas: list of idiom lemmas to process
         nlp: Spacy Language model
-        slop: maximum number of words allowed between pattern tokens (default: 3)
+        n: maximum number of words allowed between pattern tokens (default: 3)
     Returns:
-        dictionary mapping idioms to their patterns
+        dictionary mapping lemmas to their patterns
     """
     add_special_tok_cases(nlp)
-    idiom2patterns: dict[str, list[list[dict]]] = {}  # this is the one to build for
-    for idiom in tqdm(idioms):
+    lemma2patterns: dict[str, list[list[dict]]] = {}  # this is the one to build for
+    for lemma in tqdm(lemmas):
         patterns = []
-        doc = nlp(idiom)
+        doc = nlp(lemma)
         # if it's hyphenated, build a pattern for it
-        if "-" in idiom:
+        if "-" in lemma:
             patterns.append(hyphenated(doc, n))
         # if it includes openslot, build a pattern for it
         elif set(PRON_PLACEHOLDER_CASES + PRP_PLACEHOLDER_CASES + OPTIONAL_CASES).intersection(set(tok.text for tok in doc)) \
-            and idiom not in ["something like", "something awful"]:  # cases where something is not an openslot
+            and lemma not in ["something like", "something awful"]:  # cases where something is not an openslot
             patterns.append(openslot(doc, n))
             patterns.append(openslot_passive(doc, n))
         # else, just add default patterns
         else:
             patterns.append(default(doc, n))
-        idiom2patterns[idiom] = patterns
-    return idiom2patterns
+        lemma2patterns[lemma] = patterns
+    return lemma2patterns
