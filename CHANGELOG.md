@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.13] - 2024-03-24
+
+### Fixed
+- Fixed ModuleNotFoundError for _models package by updating setuptools configuration to automatically discover all packages
+
 ## [0.2.12] - 2024-03-24
 
 ### Added
